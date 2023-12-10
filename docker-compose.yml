@@ -15,8 +15,8 @@ services:
     image: mysql
     restart: always
     environment:
-      MYSQL_ALLOW_EMPTY_PASSWORD='yes'
-      MYSQL_DATABASE='hive'
+      MYSQL_ALLOW_EMPTY_PASSWORD: 'yes'
+      MYSQL_DATABASE: 'hive'
     networks:
       databasenet:
         aliases:
