@@ -10,8 +10,10 @@ pipeline {
 
 	stage('docker-compose up') {
             steps {
-	    	sh 'cp .env-jenkins .env'
-        	sh 'docker-compose up -d app database'
+	    	sh '''
+		    cp .env-jenkins .env
+		    docker-compose up -d app database
+		'''
             }
         }
     }
