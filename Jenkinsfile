@@ -11,6 +11,7 @@ pipeline {
 	stage('docker-compose up') {
             steps {
 	    	sh '''
+		    echo "Debug"
 		    cp .env-jenkins .env
 		    docker-compose up -d app database
 		'''
