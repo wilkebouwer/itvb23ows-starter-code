@@ -8,6 +8,14 @@ pipeline {
             }
         }
 
+	stage('test') {
+            steps {
+	    	sh '''
+		    echo "Debug"
+		'''
+            }
+        }
+
 	stage('docker-compose up') {
             steps {
 	    	sh '''
@@ -17,6 +25,8 @@ pipeline {
 		'''
             }
         }
+
+
     }
 
     post {
