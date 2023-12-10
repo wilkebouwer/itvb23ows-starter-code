@@ -5,8 +5,8 @@ pipeline {
 	stage('docker-compose build') {
             steps {
         	sh '''
-		    sh 'cp ./.env-jenkins ./.env'
-		    docker-compose build app database'
+		    cp ./.env-jenkins ./.env
+		    docker-compose build app database
 		'''
             }
         }
