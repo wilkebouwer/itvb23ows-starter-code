@@ -22,10 +22,10 @@ unclassified:
     url: http://127.0.0.1:${JENKINS_PORT}/
 jobs:
   - script: >
-      multibranchPipelineJob('wilkebouwer/itvb23ows-starter-code') {
+      multibranchPipelineJob('wilkebouwer-itvb23ows-starter-code') {
           branchSources {
               git {
-                  id = 'wilkebouwer/itvb23ows-starter-code'
+                  id = 'wilkebouwer-itvb23ows-starter-code'
                   remote('https://github.com/wilkebouwer/itvb23ows-starter-code')
               }
           }
