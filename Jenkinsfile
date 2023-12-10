@@ -2,15 +2,12 @@ pipeline {
     agent any
 
     stages {
-	stage('Set environment variables for docker-compose') {
-            steps {
-	    	sh 'cp ./.env-jenkins ./.env'
-            }
-        }
-
 	stage('docker-compose build') {
             steps {
-        	sh 'docker-compose build app database'
+        	sh '''
+		    sh 'cp ./.env-jenkins ./.env'
+		    docker-compose build app database'
+		'''
             }
         }
 
