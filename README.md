@@ -22,9 +22,38 @@ This application is licensed under the MIT license, see `LICENSE.md`. Questions
 and comments can be directed to
 [Ralf van den Broek](https://github.com/ralfvandenbroek).
 
-## Docker
+## Running the application with Docker
 
-In the git root:
+The following commands should be run from the Git root.
 
-`docker compose build`
-`docker compose up`
+### Production
+
+To only the production containers, execute the following commands:
+
+`cp .env-example .env`
+
+If you want you can change environment variables in `.env`. Don't worry about the JENKINS.* and DOCKER_GID variables if you're planning to only run the production configuration. They can be kept unchanged.
+
+`docker-compose build app database`
+
+`docker-compose up app database`
+
+The app should now be accessible from `http://localhost:APP_PORT/`
+
+### Development
+
+Setting up the development containers is a bit more involved. Included in the development setup is a tool for setting up development pipelines called Jenkins, which runs in a Docker container, but also needs the capability to run Docker containers from within the container. This is called Docker in Docker, and it requires some special configuration.
+
+Instead of copying the `.env-example` file in the normal way, it's required to run the following command, which does it for you:
+
+`sed "s/\(DOCKER_GID=\)/\1$(grep '^docker' /etc/group | cut -d':' -f3)/" .env-example > .env`
+
+This command changes the `DOCKER_GID` variable to the GID of the docker group on your host system, because the docker group in the Jenkins container will need to match this GID as well for the configuration to work. This is because the dockerd socket from the host is used from within the Jenkins container through a volume. After running this command, you're free to change any other environment variable in `.env` you want.
+
+After this, build and start all containers:
+
+`docker-compose build`
+
+`docker-compose up`
+
+Jenkins should now accessible from `http://localhost:JENKINS_PORT/`, using the credentials `JENKINS_ADMIN_ID` as username and `JENKINS_ADMIN_PASSWORD` as password. The app should now be accessible from `http://localhost:APP_PORT/`

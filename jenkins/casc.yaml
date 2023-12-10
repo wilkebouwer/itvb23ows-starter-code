@@ -19,13 +19,13 @@ security:
         strategy: triggeringUsersAuthorizationStrategy
 unclassified:
   location:
-    url: http://127.0.0.1:8080/
+    url: http://127.0.0.1:${JENKINS_PORT}/
 jobs:
   - script: >
-      multibranchPipelineJob('itvb23ows-starter-code') {
+      multibranchPipelineJob('wilkebouwer/itvb23ows-starter-code') {
           branchSources {
               git {
-                  id = 'itvb23ows-starter-code'
+                  id = 'wilkebouwer/itvb23ows-starter-code'
                   remote('https://github.com/wilkebouwer/itvb23ows-starter-code')
               }
           }

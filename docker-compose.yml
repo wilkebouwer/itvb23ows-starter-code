@@ -25,10 +25,11 @@ services:
     build:
       context: ./jenkins/
       args:
-        DOCKERGID: ${DOCKERGID}
+        DOCKER_GID: ${DOCKER_GID}
     environment:
       JENKINS_ADMIN_ID: ${JENKINS_ADMIN_ID}
       JENKINS_ADMIN_PASSWORD: ${JENKINS_ADMIN_PASSWORD}
+      JENKINS_PORT: ${JENKINS_PORT}
     volumes:
       - /var/run/docker.sock:/var/run/docker.sock
     ports:
