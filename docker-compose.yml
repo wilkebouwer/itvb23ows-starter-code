@@ -5,18 +5,18 @@ services:
     build: ./app/
     depends_on:
       - database
-    command: php -S 0.0.0.0:8000
+    command: php -S 0.0.0.0:${APP_PORT}
     networks:
       - databasenet
     ports:
-      - "8000:8000"
+      - "${APP_PORT}:${APP_PORT}"
   database:
     build: ./database/
     image: mysql
     restart: always
     environment:
       MYSQL_ALLOW_EMPTY_PASSWORD: 'yes'
-      MYSQL_DATABASE: 'hive'
+      MYSQL_DATABASE: ${MYSQL_DATABASE}
     networks:
       databasenet:
         aliases:
@@ -27,12 +27,12 @@ services:
       args:
         DOCKERGID: ${DOCKERGID}
     environment:
-      JENKINS_ADMIN_ID: admin
-      JENKINS_ADMIN_PASSWORD: admin
+      JENKINS_ADMIN_ID: ${JENKINS_ADMIN_ID}
+      JENKINS_ADMIN_PASSWORD: ${JENKINS_ADMIN_PASSWORD}
     volumes:
       - /var/run/docker.sock:/var/run/docker.sock
     ports:
-      - "8080:8080"
+      - "${JENKINS_PORT}:${JENKINS_PORT}"
 
 networks:
   databasenet:
