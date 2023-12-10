@@ -10,7 +10,7 @@ pipeline {
 
 	stage('docker-compose up') {
             steps {
-        	sh 'docker-compose up -d'
+        	sh 'docker-compose up -d app database'
             }
         }
     }

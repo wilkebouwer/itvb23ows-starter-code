@@ -15,12 +15,19 @@ services:
     image: mysql
     restart: always
     environment:
-      MYSQL_ALLOW_EMPTY_PASSWORD: yes
-      MYSQL_DATABASE: hive
+      MYSQL_ALLOW_EMPTY_PASSWORD='yes'
+      MYSQL_DATABASE='hive'
     networks:
       databasenet:
         aliases:
           - mysql
+  jenkins:
+    build: ./jenkins/
+    environment:
+      JENKINS_ADMIN_ID: admin
+      JENKINS_ADMIN_PASSWORD: admin
+    ports:
+      - "8080:8080"
 
 networks:
   databasenet:
