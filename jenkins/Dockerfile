@@ -1,10 +1,13 @@
 FROM jenkins/jenkins:latest
 ENV JAVA_OPTS -Djenkins.install.runSetupWizard=false
 ENV CASC_JENKINS_CONFIG /usr/share/jenkins/casc.yaml
+ARG DOCKERGID
 
-# Install docker-compose
+# Install docker-compose, change docker socket permissions and add jenkins user to docker group
 USER root
+RUN groupadd --gid ${DOCKERGID} docker
 RUN apt-get update && apt-get install -y docker-compose
+RUN usermod -aG docker jenkins
 USER jenkins
 
 # Install plugins

@@ -2,22 +2,22 @@ pipeline {
     agent any
 
     stages {
-	stage('docker-compose build') {
+	stage('docker compose build') {
             steps {
-        	sh 'docker-compose build'
+        	sh 'docker compose build'
             }
         }
 
-	stage('docker-compose up') {
+	stage('docker compose up') {
             steps {
-        	sh 'docker-compose up -d app database'
+        	sh 'docker compose up -d app database'
             }
         }
     }
 
     post {
       always {
-          sh 'docker-compose down --remove-orphans'
+          sh 'docker compose down --remove-orphans'
       }
    }
 }
