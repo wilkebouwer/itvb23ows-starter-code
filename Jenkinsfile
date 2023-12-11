@@ -6,7 +6,7 @@ pipeline {
             steps {
         	sh '''
 		    i=0; while IFS= read -r line; do
-		    	echo "$line" | grep -q '^.*=:port:' && echo "$line" | sed "s/\\(.*=\\):port:/\\1$(( 50000 + EXECUTOR_NUMBER + ( 100 * i ) ))/" >> ./.env && i=$((i+1)) || echo "$line" >> ./.env
+		    	echo "$line" | grep -q '^.*=:port:' && echo "$line" | sed "s/\\(.*=\\):port:/\\1$(( 50000 + ( 100 * i ) + EXECUTOR_NUMBER ))/" >> ./.env && i=$((i+1)) || echo "$line" >> ./.env
 		    done < ./.env-jenkins
 		    docker-compose build app database
 		'''
