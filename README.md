@@ -56,4 +56,4 @@ After this, build and start all containers:
 
 `docker-compose up`
 
-Jenkins should now accessible from `http://localhost:JENKINS_PORT/`, using the credentials `JENKINS_ADMIN_ID` as username and `JENKINS_ADMIN_PASSWORD` as password. It will automatically run a pipeline that checks if the production setup succesfully builds and runs. The app should now be accessible from `http://localhost:APP_PORT/`
+Jenkins should now accessible from `http://localhost:JENKINS_PORT/`, using the credentials `JENKINS_ADMIN_ID` as username and `JENKINS_ADMIN_PASSWORD` as password. It will automatically run a pipeline on the `dev` branch that checks if the production setup succesfully builds and runs, after which the `dev` branch can be merged into `main` if succesful. The app should now be accessible from `http://localhost:APP_PORT/`
