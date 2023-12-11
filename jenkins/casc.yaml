@@ -27,7 +27,7 @@ jobs:
               git {
                   id = 'wilkebouwer-itvb23ows-starter-code'
                   remote('https://github.com/wilkebouwer/itvb23ows-starter-code')
-                  branch('*/dev')
+                  includes("dev")
               }
           }
       }
