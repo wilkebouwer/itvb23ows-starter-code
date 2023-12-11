@@ -6,6 +6,8 @@ pipeline {
             steps {
         	sh '''
 		    cp ./.env-jenkins ./.env
+		    echo "test"
+		    echo ${EXECUTOR_NUMBER}
 		    docker-compose build app database
 		'''
             }
