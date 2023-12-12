@@ -5,10 +5,14 @@ pipeline {
     	stage('SonarQube Analysis') {
   	    environment {
     	        SCANNER_HOME = tool 'SonarScanner'
+    		PROJECT_NAME = 'wilkebouwer-itvb23ows-starter-code-sonarqube'
   	    }
   	    steps {
     		withSonarQubeEnv('wilkebouwer-itvb23ows-starter-code-sonarqube') {
-        	    sh '$SCANNER_HOME/bin/sonar-scanner'
+        	    sh '''
+		    	$SCANNER_HOME/bin/sonar-scanner \
+			    -Dsonar.projectKey=$PROJECT_NAME
+		    '''
     		}
   	    }
 	}

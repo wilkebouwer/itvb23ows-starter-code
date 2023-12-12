@@ -35,12 +35,19 @@ services:
       SONARQUBE_PORT: ${SONARQUBE_PORT}
     volumes:
       - /var/run/docker.sock:/var/run/docker.sock
+    networks:
+      - sonarnet
     ports:
       - "${JENKINS_PORT}:${JENKINS_PORT}"
   sonarqube:
     build: ./sonarqube/
+    networks:
+      sonarnet:
+        aliases:
+          - sonarqubeserver
     ports:
       - "${SONARQUBE_PORT}:${SONARQUBE_PORT}"
 
 networks:
   databasenet:
+  sonarnet:

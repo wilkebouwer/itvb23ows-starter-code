@@ -24,7 +24,7 @@ unclassified:
     buildWrapperEnabled: false
     installations:
     - name: "wilkebouwer-itvb23ows-starter-code-sonarqube"
-      serverUrl: http://127.0.0.1:${SONARQUBE_PORT}
+      serverUrl: http://sonarqubeserver:${SONARQUBE_PORT}
       triggers:
         skipScmCause: false
         skipUpstreamCause: false
