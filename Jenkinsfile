@@ -3,10 +3,12 @@ pipeline {
 
     stages {
     	stage('SonarQube Analysis') {
-    	    def scannerHome = tool 'SonarScanner';
-    	    withSonarQubeEnv() {
-                sh "${scannerHome}/bin/sonar-scanner"
-    	    }
+	    steps {
+    	    	def scannerHome = tool 'SonarScanner';
+    	    	    withSonarQubeEnv() {
+                	sh "${scannerHome}/bin/sonar-scanner"
+    	    	    }
+		}
 	}
 
 	stage('docker-compose build') {
