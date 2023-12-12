@@ -3,12 +3,14 @@ pipeline {
 
     stages {
     	stage('SonarQube Analysis') {
-	    steps {
-    	    	def scannerHome = tool 'SonarScanner';
-    	    	    withSonarQubeEnv() {
-                	sh "${scannerHome}/bin/sonar-scanner"
-    	    	    }
-		}
+  	    environment {
+    	        SCANNER_HOME = tool 'SonarScanner'
+  	    }
+  	    steps {
+    		withSonarQubeEnv('wilkebouwer-itvb23ows-starter-code-sonarqube') {
+        	    sh '$SCANNER_HOME/bin/sonar-scanner'
+    		}
+  	    }
 	}
 
 	stage('docker-compose build') {

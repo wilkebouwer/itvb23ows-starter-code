@@ -28,6 +28,17 @@ unclassified:
       triggers:
         skipScmCause: false
         skipUpstreamCause: false
+tool:
+  sonarRunnerInstallation:
+    installations:
+    - name: "SonarScanner"
+      properties:
+      - installSource:
+          installers:
+          - sonarRunnerInstaller:
+              id: "5.0.1.3006"
+          - sonarRunnerInstaller:
+              id: "5.0.1.3006"
 jobs:
   - script: >
       multibranchPipelineJob('wilkebouwer-itvb23ows-starter-code') {
