@@ -58,23 +58,25 @@ After this, build and start all containers:
 
 The app should now be accessible from `http://localhost:APP_PORT/`
 
+The next part to make Jenkins work is to set up the connection between Jenkins and a SAST tool called SonarQube. This is described below.
+
 #### Setting up Jenkins & SonarQube
 
-Jenkins will automatically run a pipeline that checks if the production setup succesfully builds and runs on all branches, but it will fail because setting up the connection between Jenkins and SonarQube requires some more work. This is because SonarQube has limited automation functionality.
+Jenkins will automatically run a pipeline that checks if the production setup succesfully builds and runs on all branches, but it will fail because the connection between Jenkins and SonarQube has not been properly set up yet. This is because SonarQube has limited automation functionality.
 
-The first step is to set up a Global Analysis Token in SonarQube. SonarQube should now be accessible from `http://localhost:SONARQUBE_PORT/`, and this is where you'll need to go. From here, follow the instructions for changing your password, and this should drop you into the dashboard when succesful.
+The first step is to set up a Global Analysis Token in SonarQube. SonarQube should be accessible from `http://localhost:SONARQUBE_PORT/`, and this is where you'll need to go. From here, follow the instructions for changing your password, and this should drop you into the dashboard when succesful.
 
-Select the account logo in the top right of the dashboard and select 'My Account'. From here, go to the security tab, and here you'll generate a new token with the name `wilkebouwer-itvb23ows-starter-code-sonarqube`, with the type Global Analysis Token. This token will allow Jenkins to get access to SonarQube. Press 'Generate', and copy the token. You'll need it after this.
+Select the account logo in the top right of the dashboard and select 'My Account'. From here, go to the security tab, and here you'll generate a new token with the name `wilkebouwer-itvb23ows-starter-code-sonarqube`, with the type `Global Analysis Token`. This token will allow Jenkins to get access to SonarQube. Press 'Generate', and copy the token. You'll need it after this.
 
 ![SonarQube Global Analysis Token generation](./img/sonarqube-1.png)
 
-After having copied the token, go to the Jenkins dashboard. We will now let Jenkins use the token. Jenkins should now be accessible from `http://localhost:JENKINS_PORT/`, using the credentials `JENKINS_ADMIN_ID` as username and `JENKINS_ADMIN_PASSWORD` as password. On the left side of the page, select 'Manage Jenkins'. Select 'System', and scroll down to where you see 'SonarQube Servers'.
+After having copied the token, go to the Jenkins dashboard. We will now let Jenkins use the token. Jenkins should be accessible from `http://localhost:JENKINS_PORT/`, using the credentials `JENKINS_ADMIN_ID` as username and `JENKINS_ADMIN_PASSWORD` as password. On the left side of the page, select 'Manage Jenkins'. Select 'System', and scroll down to where you see 'SonarQube Servers'.
 
 ![SonarQube Servers in Jenkins](./img/jenkins-1.png)
 
 In here, you'll set the server authentication token. Press 'Add', select 'Jenkins', set the 'Kind' to 'Secret text', and paste the copied token in 'Secret'.
 
-![Where to add SonarQube token in Jenkins](./img/jenkins-3.png)
+![Where to add SonarQube token in Jenkins](./img/jenkins-2.png)
 
 ![Adding the SonarQube token in Jenkins](./img/jenkins-3.png)
 
