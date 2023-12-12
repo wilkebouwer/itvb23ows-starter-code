@@ -81,6 +81,6 @@ In here, you'll set the server authentication token. Press 'Add', select 'Jenkin
 
 Now press 'Add'. The final step is to change the 'Server authentication token' from '- none -' to 'Secret text'.
 
-![Changing used SonarQube token in Jenkins](./img/jenkins-2.png)
+![Changing used SonarQube token in Jenkins](./img/jenkins-3.png)
 
 When this is done, press 'Save'. After this you should be able to run the pipeline succesfully. When the pipeline has been ran, the results should be visible on the SonarQube dashboard.
