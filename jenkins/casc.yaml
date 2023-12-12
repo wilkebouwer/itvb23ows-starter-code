@@ -20,6 +20,14 @@ security:
 unclassified:
   location:
     url: http://127.0.0.1:${JENKINS_PORT}/
+  sonarGlobalConfiguration:
+    buildWrapperEnabled: false
+    installations:
+    - name: "wilkebouwer-itvb23ows-starter-code-sonarqube"
+      serverUrl: http://127.0.0.1:${SONARQUBE_PORT}
+      triggers:
+        skipScmCause: false
+        skipUpstreamCause: false
 jobs:
   - script: >
       multibranchPipelineJob('wilkebouwer-itvb23ows-starter-code') {

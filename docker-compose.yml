@@ -26,14 +26,21 @@ services:
       context: ./jenkins/
       args:
         DOCKER_GID: ${DOCKER_GID}
+    depends_on:
+      - sonarqube
     environment:
       JENKINS_ADMIN_ID: ${JENKINS_ADMIN_ID}
       JENKINS_ADMIN_PASSWORD: ${JENKINS_ADMIN_PASSWORD}
       JENKINS_PORT: ${JENKINS_PORT}
+      SONARQUBE_PORT: ${SONARQUBE_PORT}
     volumes:
       - /var/run/docker.sock:/var/run/docker.sock
     ports:
       - "${JENKINS_PORT}:${JENKINS_PORT}"
+  sonarqube:
+    build: ./sonarqube/
+    ports:
+      - "${SONARQUBE_PORT}:${SONARQUBE_PORT}"
 
 networks:
   databasenet:
