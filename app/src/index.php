@@ -19,10 +19,12 @@
         }
     }
     $to = array_unique($to);
-    if (!count($to)) $to[] = '0,0';
+    if (!count($to)) {
+	    $to[] = '0,0';
+    }
 ?>
 <!DOCTYPE html>
-<html lang="nl">
+<html lang="en">
     <head>
         <title>Hive</title>
         <style>
@@ -80,8 +82,12 @@
                 $min_q = 1000;
                 foreach ($board as $pos => $tile) {
                     $pq = explode(',', $pos);
-                    if ($pq[0] < $min_p) $min_p = $pq[0];
-                    if ($pq[1] < $min_q) $min_q = $pq[1];
+		    if ($pq[0] < $min_p) {
+			    $min_p = $pq[0];
+		    }
+		    if ($pq[1] < $min_q) {
+			    $min_q = $pq[1];
+		    }
                 }
                 foreach (array_filter($board) as $pos => $tile) {
                     $pq = explode(',', $pos);
@@ -90,7 +96,9 @@
                     $h = count($tile);
                     echo '<div class="tile player';
                     echo $tile[$h-1][0];
-                    if ($h > 1) echo ' stacked';
+		    if ($h > 1) {
+			    echo ' stacked';
+		    }
                     echo '" style="left: ';
                     echo ($pq[0] - $min_p) * 4 + ($pq[1] - $min_q) * 2;
                     echo 'em; top: ';
@@ -122,40 +130,48 @@
             ?>
         </div>
         <div class="turn">
-            Turn: <?php if ($player == 0) echo "White"; else echo "Black"; ?>
+            Turn: <?php if ($player == 0) { echo "White"; } else { echo "Black"; } ?>
         </div>
         <form method="post" action="play.php">
-            <select name="piece">
-                <?php
-                    foreach ($hand[$player] as $tile => $ct) {
-                        echo "<option value=\"$tile\">$tile</option>";
-                    }
-                ?>
-            </select>
-            <select name="to">
-                <?php
-                    foreach ($to as $pos) {
-                        echo "<option value=\"$pos\">$pos</option>";
-                    }
-                ?>
-            </select>
+            <label>
+                <select name="piece">
+                    <?php
+                        foreach ($hand[$player] as $tile => $ct) {
+                            echo "<option value=\"$tile\">$tile</option>";
+                        }
+                    ?>
+                </select>
+            </label>
+            <label>
+                <select name="to">
+                    <?php
+                        foreach ($to as $pos) {
+                            echo "<option value=\"$pos\">$pos</option>";
+                        }
+                    ?>
+                </select>
+            </label>
             <input type="submit" value="Play">
         </form>
         <form method="post" action="move.php">
-            <select name="from">
-                <?php
-                    foreach (array_keys($board) as $pos) {
-                        echo "<option value=\"$pos\">$pos</option>";
-                    }
-                ?>
-            </select>
-            <select name="to">
-                <?php
-                    foreach ($to as $pos) {
-                        echo "<option value=\"$pos\">$pos</option>";
-                    }
-                ?>
-            </select>
+            <label>
+                <select name="from">
+                    <?php
+                        foreach (array_keys($board) as $pos) {
+                            echo "<option value=\"$pos\">$pos</option>";
+                        }
+                    ?>
+                </select>
+            </label>
+            <label>
+                <select name="to">
+                    <?php
+                        foreach ($to as $pos) {
+                            echo "<option value=\"$pos\">$pos</option>";
+                        }
+                    ?>
+                </select>
+            </label>
             <input type="submit" value="Move">
         </form>
         <form method="post" action="pass.php">
@@ -164,7 +180,7 @@
         <form method="post" action="restart.php">
             <input type="submit" value="Restart">
         </form>
-        <strong><?php if (isset($_SESSION['error'])) echo($_SESSION['error']); unset($_SESSION['error']); ?></strong>
+        <strong><?php if (isset($_SESSION['error'])) { echo $_SESSION['error']; unset($_SESSION['error']); } ?></strong>
         <ol>
             <?php
                 $db = include_once 'database.php';

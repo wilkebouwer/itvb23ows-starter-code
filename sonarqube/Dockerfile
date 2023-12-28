@@ -1,1 +1,1 @@
-FROM sonarqube
+FROM sonarqube:latest

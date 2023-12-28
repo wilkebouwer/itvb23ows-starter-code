@@ -1,4 +1,4 @@
-FROM jenkins/jenkins
+FROM jenkins/jenkins:latest
 ENV JAVA_OPTS -Djenkins.install.runSetupWizard=false
 ENV CASC_JENKINS_CONFIG /usr/share/jenkins/casc.yaml
 ARG DOCKER_GID
@@ -6,7 +6,7 @@ ARG DOCKER_GID
 # Install docker-compose and add jenkins user to docker group
 USER root
 RUN groupadd --gid ${DOCKER_GID} docker
-RUN apt-get update && apt-get install -y docker-compose
+RUN apt-get update && apt-get install -y docker-compose && rm -rf /var/lib/apt/lists/*
 RUN usermod -aG docker jenkins
 USER jenkins
 

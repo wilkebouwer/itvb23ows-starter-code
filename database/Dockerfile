@@ -1,5 +1,3 @@
-FROM mysql
+FROM mysql:latest
 # Initialize DB
-#RUN apt update
-
 COPY ./hive.sql ./docker-entrypoint-initdb.d/
