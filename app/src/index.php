@@ -22,7 +22,7 @@
     if (!count($to)) $to[] = '0,0';
 ?>
 <!DOCTYPE html>
-<html>
+<html lang="nl">
     <head>
         <title>Hive</title>
         <style>
@@ -167,7 +167,7 @@
         <strong><?php if (isset($_SESSION['error'])) echo($_SESSION['error']); unset($_SESSION['error']); ?></strong>
         <ol>
             <?php
-                $db = include 'database.php';
+                $db = include_once 'database.php';
                 $stmt = $db->prepare('SELECT * FROM moves WHERE game_id = '.$_SESSION['game_id']);
                 $stmt->execute();
                 $result = $stmt->get_result();
@@ -181,4 +181,3 @@
         </form>
     </body>
 </html>
-
