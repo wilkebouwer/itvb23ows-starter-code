@@ -20,7 +20,7 @@
     }
     $to = array_unique($to);
     if (!count($to)) {
-	    $to[] = '0,0';
+        $to[] = '0,0';
     }
 ?>
 <!DOCTYPE html>
@@ -83,10 +83,10 @@
                 foreach ($board as $pos => $tile) {
                     $pq = explode(',', $pos);
 		    if ($pq[0] < $min_p) {
-			    $min_p = $pq[0];
+		        $min_p = $pq[0];
 		    }
 		    if ($pq[1] < $min_q) {
-			    $min_q = $pq[1];
+		        $min_q = $pq[1];
 		    }
                 }
                 foreach (array_filter($board) as $pos => $tile) {
@@ -97,7 +97,7 @@
                     echo '<div class="tile player';
                     echo $tile[$h-1][0];
 		    if ($h > 1) {
-			    echo ' stacked';
+		        echo ' stacked';
 		    }
                     echo '" style="left: ';
                     echo ($pq[0] - $min_p) * 4 + ($pq[1] - $min_q) * 2;

@@ -15,11 +15,11 @@ function isNeighbour($a, $b) {
     $b = explode(',', $b);
 
     if ($a[0] == $b[0] && abs($a[1] - $b[1]) == 1) {
-	    return true;
+        return true;
     } elseif ($a[1] == $b[1] && abs($a[0] - $b[0]) == 1) {
-	    return true;
+        return true;
     } elseif ($a[0] + $a[1] == $b[0] + $b[1]) {
-	    return true;
+        return true;
     }
 
     return false;
@@ -27,21 +27,21 @@ function isNeighbour($a, $b) {
 
 function hasNeighbour($a, $board) {
     foreach (array_keys($board) as $b) {
-	    if (isNeighbour($a, $b)) {
-		    return true;
-	    }
+        if (isNeighbour($a, $b)) {
+            return true;
+	}
     }
     return false;
 }
 
 function neighboursAreSameColor($player, $a, $board) {
     foreach ($board as $b => $st) {
-	    if (!$st) {
-		    continue;
-	    }
+	if (!$st) {
+	    continue;
+	}
         $c = $st[count($st) - 1][0];
 	    if ($c != $player && isNeighbour($a, $b)) {
-		    return false;
+	        return false;
 	    }
     }
     return true;
@@ -53,10 +53,10 @@ function len($tile) {
 
 function slide($board, $from, $to) {
 	if (!hasNeighbour($to, $board)) {
-		return false;
+	    return false;
 	}
 	if (!isNeighbour($from, $to)) {
-		return false;
+	    return false;
 	}
     $b = explode(',', $to);
     $common = [];
@@ -64,11 +64,11 @@ function slide($board, $from, $to) {
         $p = $b[0] + $pq[0];
         $q = $b[1] + $pq[1];
 	if (isNeighbour($from, $p.",".$q)) {
-		$common[] = $p.",".$q;
+	    $common[] = $p.",".$q;
 	}
     }
     if (!$board[$common[0]] && !$board[$common[1]] && !$board[$from] && !$board[$to]) {
-	    return false;
+        return false;
     }
 
     return min(len($board[$common[0]]), len($board[$common[1]]))
