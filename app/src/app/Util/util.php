@@ -10,7 +10,8 @@ $GLOBALS['OFFSETS'] =
         [1, -1]
     ];
 
-function isNeighbour($a, $b) {
+function isNeighbour($a, $b): bool
+{
     $a = explode(',', $a);
     $b = explode(',', $b);
 
@@ -25,47 +26,51 @@ function isNeighbour($a, $b) {
     return false;
 }
 
-function hasNeighbour($a, $board) {
+function hasNeighbour($a, $board): bool
+{
     foreach (array_keys($board) as $b) {
         if (isNeighbour($a, $b)) {
             return true;
-	}
+        }
     }
     return false;
 }
 
-function neighboursAreSameColor($player, $a, $board) {
+function neighboursAreSameColor($player, $a, $board): bool
+{
     foreach ($board as $b => $st) {
-	if (!$st) {
-	    continue;
-	}
+        if (!$st) {
+            continue;
+        }
         $c = $st[count($st) - 1][0];
-	    if ($c != $player && isNeighbour($a, $b)) {
-	        return false;
-	    }
+            if ($c != $player && isNeighbour($a, $b)) {
+                return false;
+            }
     }
     return true;
 }
 
-function len($tile) {
+function len($tile): int
+{
     return $tile ? count($tile) : 0;
 }
 
-function slide($board, $from, $to) {
-	if (!hasNeighbour($to, $board)) {
-	    return false;
-	}
-	if (!isNeighbour($from, $to)) {
-	    return false;
-	}
+function slide($board, $from, $to): bool
+{
+        if (!hasNeighbour($to, $board)) {
+            return false;
+        }
+        if (!isNeighbour($from, $to)) {
+            return false;
+        }
     $b = explode(',', $to);
     $common = [];
     foreach ($GLOBALS['OFFSETS'] as $pq) {
         $p = $b[0] + $pq[0];
         $q = $b[1] + $pq[1];
-	if (isNeighbour($from, $p.",".$q)) {
-	    $common[] = $p.",".$q;
-	}
+        if (isNeighbour($from, $p.",".$q)) {
+            $common[] = $p.",".$q;
+        }
     }
     if (!$board[$common[0]] && !$board[$common[1]] && !$board[$from] && !$board[$to]) {
         return false;

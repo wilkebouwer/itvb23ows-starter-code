@@ -1,10 +1,12 @@
 <?php
     session_start();
 
-    include_once 'util.php';
+    require './app/bootstrap.php';
+
+    include_once 'app/Util/util.php';
 
     if (!isset($_SESSION['board'])) {
-        header('Location: restart.php');
+        header('Location: ./app/restart.php');
         exit(0);
     }
     $board = $_SESSION['board'];
@@ -82,23 +84,21 @@
                 $min_q = 1000;
                 foreach ($board as $pos => $tile) {
                     $pq = explode(',', $pos);
-		    if ($pq[0] < $min_p) {
-		        $min_p = $pq[0];
-		    }
-		    if ($pq[1] < $min_q) {
-		        $min_q = $pq[1];
-		    }
+                    if ($pq[0] < $min_p) {
+                        $min_p = $pq[0];
+                    }
+                    if ($pq[1] < $min_q) {
+                        $min_q = $pq[1];
+                    }
                 }
                 foreach (array_filter($board) as $pos => $tile) {
                     $pq = explode(',', $pos);
-                    $pq[0];
-                    $pq[1];
                     $h = count($tile);
                     echo '<div class="tile player';
                     echo $tile[$h-1][0];
-		    if ($h > 1) {
-		        echo ' stacked';
-		    }
+                    if ($h > 1) {
+                        echo ' stacked';
+                    }
                     echo '" style="left: ';
                     echo ($pq[0] - $min_p) * 4 + ($pq[1] - $min_q) * 2;
                     echo 'em; top: ';
@@ -132,7 +132,7 @@
         <div class="turn">
             Turn: <?php if ($player == 0) { echo "White"; } else { echo "Black"; } ?>
         </div>
-        <form method="post" action="play.php">
+        <form method="post" action="app/play.php">
             <label>
                 <select name="piece">
                     <?php
@@ -153,7 +153,7 @@
             </label>
             <input type="submit" value="Play">
         </form>
-        <form method="post" action="move.php">
+        <form method="post" action="app/move.php">
             <label>
                 <select name="from">
                     <?php
@@ -174,17 +174,23 @@
             </label>
             <input type="submit" value="Move">
         </form>
-        <form method="post" action="pass.php">
+        <form method="post" action="app/pass.php">
             <input type="submit" value="Pass">
         </form>
-        <form method="post" action="restart.php">
+        <form method="post" action="app/restart.php">
             <input type="submit" value="Restart">
         </form>
         <strong><?php if (isset($_SESSION['error'])) { echo $_SESSION['error']; unset($_SESSION['error']); } ?></strong>
         <ol>
             <?php
-                $db = include_once 'database.php';
-                $stmt = $db->prepare('SELECT * FROM moves WHERE game_id = '.$_SESSION['game_id']);
+
+            use app\Database\DatabaseHandler as DatabaseHandler;
+
+            $databaseHandler = new DatabaseHandler();
+                $database = $databaseHandler->getDatabase();
+
+                // TODO: Unsafe SQL
+                $stmt = $database->prepare('SELECT * FROM moves WHERE game_id = '.$_SESSION['game_id']);
                 $stmt->execute();
                 $result = $stmt->get_result();
                 while ($row = $result->fetch_array()) {
@@ -192,7 +198,7 @@
                 }
             ?>
         </ol>
-        <form method="post" action="undo.php">
+        <form method="post" action="app/undo.php">
             <input type="submit" value="Undo">
         </form>
     </body>

@@ -2,7 +2,9 @@
 
 session_start();
 
-include_once 'util.php';
+use Database\DatabaseHandler as DatabaseHandler;
+
+include_once 'Util/util.php';
 
 $from = $_POST['from'];
 $to = $_POST['to'];
@@ -40,37 +42,41 @@ if (!isset($board[$from])) {
         if ($all) {
             $_SESSION['error'] = "Move would split hive";
         } else {
-	    if ($from == $to) {
-	        $_SESSION['error'] = 'Tile must move';
-	    } elseif (isset($board[$to]) && $tile[1] != "B") {
-		$_SESSION['error'] = 'Tile not empty';
-	    } elseif ($tile[1] == "Q" || $tile[1] == "B") {
+            if ($from == $to) {
+                $_SESSION['error'] = 'Tile must move';
+            } elseif (isset($board[$to]) && $tile[1] != "B") {
+                $_SESSION['error'] = 'Tile not empty';
+            } elseif ($tile[1] == "Q" || $tile[1] == "B") {
                 if (!slide($board, $from, $to)) {
-		    $_SESSION['error'] = 'Tile must slide';
-		}
+                    $_SESSION['error'] = 'Tile must slide';
+                }
             }
         }
     }
     if (isset($_SESSION['error'])) {
-        $board[$from][] = $tile;
+        $board[$from] = [$tile];
     } else {
-	if (isset($board[$to])) {
-	    $board[$to][] = $tile;
-	} else {
-	    $board[$to] = [$tile];
-	}
+        if (isset($board[$to])) {
+            $board[$to] = [$tile];
+        } else {
+            $board[$to] = [$tile];
+        }
         $_SESSION['player'] = 1 - $_SESSION['player'];
-	$db = include_once 'database.php';
 
-	$stmt = $db->prepare('insert into moves
-	    (game_id, type, move_from, move_to, previous_id, state)
-	    values (?, "move", ?, ?, ?, ?)');
+        $databaseHandler = new DatabaseHandler();
+        $database = $databaseHandler->getDatabase();
 
-        $stmt->bind_param('issis', $_SESSION['game_id'], $from, $to, $_SESSION['last_move'], getState());
+        $stmt = $database->prepare('insert into moves
+            (game_id, type, move_from, move_to, previous_id, state)
+            values (?, "move", ?, ?, ?, ?)');
+
+        $state = $databaseHandler->getState();
+
+        $stmt->bind_param('issis', $_SESSION['game_id'], $from, $to, $_SESSION['last_move'], $state);
         $stmt->execute();
-        $_SESSION['last_move'] = $db->insert_id;
+        $_SESSION['last_move'] = $database->insert_id;
     }
     $_SESSION['board'] = $board;
 }
 
-header('Location: index.php');
+header('Location: ../index.php');
