@@ -52,14 +52,13 @@ class StateHandler
         $_SESSION['player'] = 1 - $_SESSION['player'];
     }
 
-    public function decreasePiece($piece)
+    public function setBoardPiece($player, $piece, $to)
     {
-        $_SESSION['hand'][$_SESSION['player']][$piece]--;
-    }
+        // Set piece on board
+        $_SESSION['board'][$to] = [[$player, $piece]];
 
-    public function setBoardPiece($to, $piece)
-    {
-        $_SESSION['board'][$to] = [[$_SESSION['player'], $piece]];
+        // Decrease piece from hand
+        $_SESSION['hand'][$player][$piece]--;
     }
 
     public function setLastMove($id) {
@@ -83,19 +82,21 @@ class StateHandler
     }
 
     public function getLastMove() {
-        return $_SESSION['last_move'];
+        if (isset($_SESSION['last_move'])) {
+            return $_SESSION['last_move'];
+        }
+        return null;
     }
 
     public function getPlayer() {
         return $_SESSION['player'];
     }
 
-    public function setPlayer($player) {
-        $_SESSION['player'] = $player;
-    }
-
     public function getError() {
-        return $_SESSION['error'];
+        if (isset($_SESSION['error'])) {
+            return $_SESSION['error'];
+        }
+        return null;
     }
 
     public function setError($error) {
@@ -106,7 +107,4 @@ class StateHandler
         return $_SESSION['hand'];
     }
 
-    public function setHand($hand) {
-        $_SESSION['hand'] = $hand;
-    }
 }

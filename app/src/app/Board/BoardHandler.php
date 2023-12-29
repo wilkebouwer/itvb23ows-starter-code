@@ -22,7 +22,7 @@ class BoardHandler
         $this->backendHandler = $backendHandler;
     }
 
-    public function getOffsets()
+    public function getOffsets(): array
     {
         return $this->offsets;
     }
@@ -37,17 +37,73 @@ class BoardHandler
             $stateHandler->setError("Player does not have tile");
         } elseif (isset($board[$to])) {
             $stateHandler->setError('BoardHandler position is not empty');
-        } elseif (count($board) && !hasNeighbour($to, $board)) {
+        } elseif (count($board) && !$this->hasNeighbour($to, $board)) {
             $stateHandler->setError("board position has no neighbour");
-        } elseif (array_sum($hand) < 11 && !neighboursAreSameColor($player, $to, $board)) {
+        } elseif (array_sum($hand) < 11 && !$this->neighboursAreSameColor($player, $to, $board)) {
             $stateHandler->setError("BoardHandler position has opposing neighbour");
         } elseif (array_sum($hand) <= 8 && $hand['Q']) {
             $stateHandler->setError('Must play queen bee');
         } else {
-            $stateHandler->setBoardPiece($to, $piece);
-            $stateHandler->decreasePiece($piece);
+            $stateHandler->setBoardPiece($player, $piece, $to);
 
             $this->backendHandler->addMove($piece, $to);
+        }
+    }
+
+    public function move($board, $player, $from, $to)
+    {
+        $stateHandler = $this->backendHandler->getStateHandler();
+
+        $hand = $stateHandler->getHand()[$player];
+        $stateHandler->setError(null);
+
+        if (!isset($board[$from])) {
+            $stateHandler->setError("BoardHandler position is empty");
+        } elseif ($board[$from][count($board[$from]) - 1][0] != $player) {
+            $stateHandler->setError("Tile is not owned by player");
+        } elseif ($hand['Q']) {
+            $stateHandler->setError("Queen bee is not played");
+        } else {
+            $tile = array_pop($board[$from]);
+            if (!$this->hasNeighbour($to, $board)) {
+                $stateHandler->setError("Move would split hive");
+            } else {
+                $all = array_keys($board);
+                $queue = [array_shift($all)];
+                while ($queue) {
+                    $next = explode(',', array_shift($queue));
+                    foreach ($this->offsets as $pq) {
+                        list($p, $q) = $pq;
+                        $p += $next[0];
+                        $q += $next[1];
+                        if (in_array("$p,$q", $all)) {
+                            $queue[] = "$p,$q";
+                            $all = array_diff($all, ["$p,$q"]);
+                        }
+                    }
+                }
+                if ($all) {
+                    $stateHandler->setError("Move would split hive");
+                } else {
+                    if ($from == $to) {
+                        $stateHandler->setError("Tile must move");
+                    } elseif (isset($board[$to]) && $tile[1] != "B") {
+                        $stateHandler->setError("Tile not empty");
+                    } elseif ($tile[1] == "Q" || $tile[1] == "B") {
+                        if (!$this->slide($board, $from, $to)) {
+                            $stateHandler->setError("Tile must slide");
+                        }
+                    }
+                }
+            }
+            if ($stateHandler->getError() != null) {
+                $board[$from] = [$tile];
+            } else {
+                $board[$to] = [$tile];
+
+                $this->backendHandler->addMove($from, $to);
+            }
+            $stateHandler->setBoard($board);
         }
     }
 
@@ -70,7 +126,7 @@ class BoardHandler
     private function hasNeighbour($a, $board): bool
     {
         foreach (array_keys($board) as $b) {
-            if (isNeighbour($a, $b)) {
+            if ($this->isNeighbour($a, $b)) {
                 return true;
             }
         }
@@ -84,7 +140,7 @@ class BoardHandler
                 continue;
             }
             $c = $st[count($st) - 1][0];
-            if ($c != $player && isNeighbour($a, $b)) {
+            if ($c != $player && $this->isNeighbour($a, $b)) {
                 return false;
             }
         }
@@ -98,10 +154,10 @@ class BoardHandler
 
     private function slide($board, $from, $to): bool
     {
-        if (!hasNeighbour($to, $board)) {
+        if (!$this->hasNeighbour($to, $board)) {
             return false;
         }
-        if (!isNeighbour($from, $to)) {
+        if (!$this->isNeighbour($from, $to)) {
             return false;
         }
         $b = explode(',', $to);
@@ -109,7 +165,7 @@ class BoardHandler
         foreach ($this->offsets as $pq) {
             $p = $b[0] + $pq[0];
             $q = $b[1] + $pq[1];
-            if (isNeighbour($from, $p.",".$q)) {
+            if ($this->isNeighbour($from, $p.",".$q)) {
                 $common[] = $p.",".$q;
             }
         }
@@ -117,7 +173,7 @@ class BoardHandler
             return false;
         }
 
-        return min(len($board[$common[0]]), len($board[$common[1]]))
-            <= max(len($board[$from]), len($board[$to]));
+        return min($this->len($board[$common[0]]), $this->len($board[$common[1]]))
+            <= max($this->len($board[$from]), $this->len($board[$to]));
     }
 }

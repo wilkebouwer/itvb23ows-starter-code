@@ -6,8 +6,6 @@
 
     require './app/bootstrap.php';
 
-    include_once 'app/Util/util.php';
-
     $backendHandler = new BackendHandler();
 
     $boardHandler = new BoardHandler($backendHandler);
@@ -55,63 +53,15 @@
         $from = $_POST['from'];
         $to = $_POST['to'];
 
-        $hand = $stateHandler->getHand()[$player];
-        $stateHandler->setError(null);
+        $boardHandler->move($board, $player, $from, $to);
 
-        if (!isset($board[$from])) {
-            $stateHandler->setError("BoardHandler position is empty");
-        } elseif ($board[$from][count($board[$from]) - 1][0] != $player) {
-            $stateHandler->setError("Tile is not owned by player");
-        } elseif ($hand['Q']) {
-            $stateHandler->setError("Queen bee is not played");
-        } else {
-            $tile = array_pop($board[$from]);
-            if (!hasNeighbour($to, $board)) {
-                $stateHandler->setError("Move would split hive");
-            } else {
-                $all = array_keys($board);
-                $queue = [array_shift($all)];
-                while ($queue) {
-                    $next = explode(',', array_shift($queue));
-                    foreach ($GLOBALS['OFFSETS'] as $pq) {
-                        list($p, $q) = $pq;
-                        $p += $next[0];
-                        $q += $next[1];
-                        if (in_array("$p,$q", $all)) {
-                            $queue[] = "$p,$q";
-                            $all = array_diff($all, ["$p,$q"]);
-                        }
-                    }
-                }
-                if ($all) {
-                    $stateHandler->setError("Move would split hive");
-                } else {
-                    if ($from == $to) {
-                        $stateHandler->setError("Tile must move");
-                    } elseif (isset($board[$to]) && $tile[1] != "B") {
-                        $stateHandler->setError("Tile not empty");
-                    } elseif ($tile[1] == "Q" || $tile[1] == "B") {
-                        if (!slide($board, $from, $to)) {
-                            $stateHandler->setError("Tile must slide");
-                        }
-                    }
-                }
-            }
-            if ($stateHandler->getError() != null) {
-                $board[$from] = [$tile];
-            } else {
-                $board[$to] = [$tile];
-
-                $backendHandler->addMove($from, $to);
-            }
-            $stateHandler->setBoard($board);
-        }
+        header('Location: ./index.php');
     }
 
-    $hand = $_SESSION['hand'];
+    $hand = $stateHandler->getHand();
 
     $to = [];
-    foreach ($GLOBALS['OFFSETS'] as $pq) {
+    foreach ($boardHandler->getOffsets() as $pq) {
         foreach (array_keys($board) as $pos) {
             $pq2 = explode(',', $pos);
             $to[] = ($pq[0] + $pq2[0]).','.($pq[1] + $pq2[1]);
@@ -278,7 +228,7 @@
             <input type="submit" name="restart" value="Restart">
         </form>
 
-        <strong><?php if (isset($_SESSION['error'])) { echo $_SESSION['error']; unset($_SESSION['error']); } ?></strong>
+        <strong><?php if ($stateHandler->getError() !== null) { echo $stateHandler->getError(); $stateHandler->setError(null); } ?></strong>
         <ol>
             <?php
                 $moves = $backendHandler->getMoves();
