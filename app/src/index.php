@@ -4,34 +4,36 @@
     use Backend\BackendHandler as BackendHandler;
     use Board\BoardHandler as BoardHandler;
 
-    require './app/bootstrap.php';
+    require_once './app/bootstrap.php';
 
     $backendHandler = new BackendHandler();
 
     $boardHandler = new BoardHandler($backendHandler);
     $stateHandler = $backendHandler->getStateHandler();
 
+    $indexLocationHeader = "Location: ./index.php";
+
     // Handle 'Pass' button press
     if(array_key_exists('pass', $_POST)) {
         $backendHandler->addMove(null, null);
-        header('Location: ./index.php');
+        header($indexLocationHeader);
     }
 
     // Handle 'Restart' button press
     if(array_key_exists('restart', $_POST)) {
         $backendHandler->restart();
-        header('Location: ./index.php');
+        header($indexLocationHeader);
     }
 
     // Handle 'Undo' button press
     if(array_key_exists('undo', $_POST)) {
         $backendHandler->undo();
-        header('Location: ./index.php');
+        header($indexLocationHeader);
     }
 
     if (!isset($_SESSION['board'])) {
         $backendHandler->restart();
-        header('Location: ./index.php');
+        header($indexLocationHeader);
         exit(0);
     }
 
@@ -45,7 +47,7 @@
 
         $boardHandler->play($board, $player, $piece, $to);
 
-        header('Location: ./index.php');
+        header($indexLocationHeader);
     }
 
     // Handle 'Move' button press
@@ -55,7 +57,7 @@
 
         $boardHandler->move($board, $player, $from, $to);
 
-        header('Location: ./index.php');
+        header($indexLocationHeader);
     }
 
     $hand = $stateHandler->getHand();
@@ -131,7 +133,13 @@
             ?>
         </div>
         <div class="turn">
-            Turn: <?php if ($player == 0) { echo "White"; } else { echo "Black"; } ?>
+            Turn: <?php
+                        if ($player == 0) {
+                            echo "White";
+                        } else {
+                            echo "Black";
+                        }
+                  ?>
         </div>
         <form method="post">
             <label>

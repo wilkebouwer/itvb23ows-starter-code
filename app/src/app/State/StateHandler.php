@@ -106,5 +106,4 @@ class StateHandler
     public function getHand() {
         return $_SESSION['hand'];
     }
-
 }
