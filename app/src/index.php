@@ -32,8 +32,101 @@
         header('Location: ./index.php');
         exit(0);
     }
+
     $board = $_SESSION['board'];
     $player = $_SESSION['player'];
+
+    // Handle 'Play' button press
+    if(array_key_exists('play', $_POST)) {
+        $stateHandler = $backendHandler->getStateHandler();
+
+        $piece = $_POST['piece'];
+        $to = $_POST['to'];
+
+        $hand = $stateHandler->getHand()[$player];
+
+        if (!$hand[$piece]) {
+            $stateHandler->setError("Player does not have tile");
+        } elseif (isset($board[$to])) {
+            $stateHandler->setError('Board position is not empty');
+        } elseif (count($board) && !hasNeighbour($to, $board)) {
+            $stateHandler->setError("board position has no neighbour");
+        } elseif (array_sum($hand) < 11 && !neighboursAreSameColor($player, $to, $board)) {
+            $stateHandler->setError("Board position has opposing neighbour");
+        } elseif (array_sum($hand) <= 8 && $hand['Q']) {
+            $stateHandler->setError('Must play queen bee');
+        } else {
+            $stateHandler->setBoardPiece($to, $piece);
+            $stateHandler->decreasePiece($piece);
+
+            $backendHandler->addMove($piece, $to);
+        }
+
+        header('Location: ./index.php');
+    }
+
+    // Handle 'Move' button press
+    if(array_key_exists('move', $_POST)) {
+        $from = $_POST['from'];
+        $to = $_POST['to'];
+
+        $hand = $_SESSION['hand'][$player];
+        unset($_SESSION['error']);
+
+        if (!isset($board[$from])) {
+            $_SESSION['error'] = 'Board position is empty';
+        } elseif ($board[$from][count($board[$from]) - 1][0] != $player) {
+            $_SESSION['error'] = "Tile is not owned by player";
+        } elseif ($hand['Q']) {
+            $_SESSION['error'] = "Queen bee is not played";
+        } else {
+            $tile = array_pop($board[$from]);
+            if (!hasNeighbour($to, $board)) {
+                $_SESSION['error'] = "Move would split hive";
+            } else {
+                $all = array_keys($board);
+                $queue = [array_shift($all)];
+                while ($queue) {
+                    $next = explode(',', array_shift($queue));
+                    foreach ($GLOBALS['OFFSETS'] as $pq) {
+                        list($p, $q) = $pq;
+                        $p += $next[0];
+                        $q += $next[1];
+                        if (in_array("$p,$q", $all)) {
+                            $queue[] = "$p,$q";
+                            $all = array_diff($all, ["$p,$q"]);
+                        }
+                    }
+                }
+                if ($all) {
+                    $_SESSION['error'] = "Move would split hive";
+                } else {
+                    if ($from == $to) {
+                        $_SESSION['error'] = 'Tile must move';
+                    } elseif (isset($board[$to]) && $tile[1] != "B") {
+                        $_SESSION['error'] = 'Tile not empty';
+                    } elseif ($tile[1] == "Q" || $tile[1] == "B") {
+                        if (!slide($board, $from, $to)) {
+                            $_SESSION['error'] = 'Tile must slide';
+                        }
+                    }
+                }
+            }
+            if (isset($_SESSION['error'])) {
+                $board[$from] = [$tile];
+            } else {
+                if (isset($board[$to])) {
+                    $board[$to] = [$tile];
+                } else {
+                    $board[$to] = [$tile];
+                }
+
+                $backendHandler->addMove($from, $to);
+            }
+            $_SESSION['board'] = $board;
+        }
+    }
+
     $hand = $_SESSION['hand'];
 
     $to = [];
@@ -155,7 +248,7 @@
         <div class="turn">
             Turn: <?php if ($player == 0) { echo "White"; } else { echo "Black"; } ?>
         </div>
-        <form method="post" action="app/play.php">
+        <form method="post">
             <label>
                 <select name="piece">
                     <?php
@@ -174,9 +267,9 @@
                     ?>
                 </select>
             </label>
-            <input type="submit" value="Play">
+            <input type="submit" name="play" value="Play">
         </form>
-        <form method="post" action="app/move.php">
+        <form method="post">
             <label>
                 <select name="from">
                     <?php
@@ -195,7 +288,7 @@
                     ?>
                 </select>
             </label>
-            <input type="submit" value="Move">
+            <input type="submit" name="move" value="Move">
         </form>
         <form method="post">
             <input type="submit" name="pass" value="Pass">
@@ -207,19 +300,8 @@
         <strong><?php if (isset($_SESSION['error'])) { echo $_SESSION['error']; unset($_SESSION['error']); } ?></strong>
         <ol>
             <?php
-
-            use Database\DatabaseHandler as DatabaseHandler;
-
-            $databaseHandler = new DatabaseHandler();
-                $database = $databaseHandler->getDatabase();
-
-                $stmt = $database->prepare('SELECT * FROM moves WHERE game_id = ?');
-
-                $stmt->bind_param('s', $_SESSION['game_id']);
-                $stmt->execute();
-
-                $result = $stmt->get_result();
-                while ($row = $result->fetch_array()) {
+                $moves = $backendHandler->getMoves();
+                while ($row = $moves->fetch_array()) {
                     echo '<li>'.$row[2].' '.$row[3].' '.$row[4].'</li>';
                 }
             ?>
