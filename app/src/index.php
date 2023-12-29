@@ -8,6 +8,7 @@
     include_once 'app/Util/util.php';
 
     $backendHandler = new BackendHandler();
+    $stateHandler = $backendHandler->getStateHandler();
 
     // Handle 'Pass' button press
     if(array_key_exists('pass', $_POST)) {
@@ -33,13 +34,11 @@
         exit(0);
     }
 
-    $board = $_SESSION['board'];
-    $player = $_SESSION['player'];
+    $board = $stateHandler->getBoard();
+    $player = $stateHandler->getPlayer();
 
     // Handle 'Play' button press
     if(array_key_exists('play', $_POST)) {
-        $stateHandler = $backendHandler->getStateHandler();
-
         $piece = $_POST['piece'];
         $to = $_POST['to'];
 
@@ -70,19 +69,19 @@
         $from = $_POST['from'];
         $to = $_POST['to'];
 
-        $hand = $_SESSION['hand'][$player];
-        unset($_SESSION['error']);
+        $hand = $stateHandler->getHand()[$player];
+        $stateHandler->setError(null);
 
         if (!isset($board[$from])) {
-            $_SESSION['error'] = 'Board position is empty';
+            $stateHandler->setError("Board position is empty");
         } elseif ($board[$from][count($board[$from]) - 1][0] != $player) {
-            $_SESSION['error'] = "Tile is not owned by player";
+            $stateHandler->setError("Tile is not owned by player");
         } elseif ($hand['Q']) {
-            $_SESSION['error'] = "Queen bee is not played";
+            $stateHandler->setError("Queen bee is not played");
         } else {
             $tile = array_pop($board[$from]);
             if (!hasNeighbour($to, $board)) {
-                $_SESSION['error'] = "Move would split hive";
+                $stateHandler->setError("Move would split hive");
             } else {
                 $all = array_keys($board);
                 $queue = [array_shift($all)];
@@ -99,31 +98,27 @@
                     }
                 }
                 if ($all) {
-                    $_SESSION['error'] = "Move would split hive";
+                    $stateHandler->setError("Move would split hive");
                 } else {
                     if ($from == $to) {
-                        $_SESSION['error'] = 'Tile must move';
+                        $stateHandler->setError("Tile must move");
                     } elseif (isset($board[$to]) && $tile[1] != "B") {
-                        $_SESSION['error'] = 'Tile not empty';
+                        $stateHandler->setError("Tile not empty");
                     } elseif ($tile[1] == "Q" || $tile[1] == "B") {
                         if (!slide($board, $from, $to)) {
-                            $_SESSION['error'] = 'Tile must slide';
+                            $stateHandler->setError("Tile must slide");
                         }
                     }
                 }
             }
-            if (isset($_SESSION['error'])) {
+            if ($stateHandler->getError() != null) {
                 $board[$from] = [$tile];
             } else {
-                if (isset($board[$to])) {
-                    $board[$to] = [$tile];
-                } else {
-                    $board[$to] = [$tile];
-                }
+                $board[$to] = [$tile];
 
                 $backendHandler->addMove($from, $to);
             }
-            $_SESSION['board'] = $board;
+            $stateHandler->setBoard($board);
         }
     }
 

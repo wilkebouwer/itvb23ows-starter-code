@@ -66,6 +66,14 @@ class StateHandler
         $_SESSION['last_move'] = $id;
     }
 
+    public function getBoard() {
+        return $_SESSION['board'];
+    }
+
+    public function setBoard($board) {
+        $_SESSION['board'] = $board;
+    }
+
     public function getGameID() {
         return $_SESSION['game_id'];
     }
