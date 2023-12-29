@@ -1,12 +1,23 @@
 <?php
     session_start();
 
+    use Backend\BackendHandler as BackendHandler;
+
     require './app/bootstrap.php';
 
     include_once 'app/Util/util.php';
 
+    $backendHandler = new BackendHandler();
+
+    // Handle 'Restart' button press
+    if(array_key_exists('restart', $_POST)) {
+        $backendHandler->restart();
+        header('Location: ./index.php');
+    }
+
     if (!isset($_SESSION['board'])) {
-        header('Location: ./app/restart.php');
+        $backendHandler->restart();
+        header('Location: ./index.php');
         exit(0);
     }
     $board = $_SESSION['board'];
@@ -177,9 +188,10 @@
         <form method="post" action="app/pass.php">
             <input type="submit" value="Pass">
         </form>
-        <form method="post" action="app/restart.php">
-            <input type="submit" value="Restart">
+        <form method="post">
+            <input type="submit" name="restart" value="Restart">
         </form>
+
         <strong><?php if (isset($_SESSION['error'])) { echo $_SESSION['error']; unset($_SESSION['error']); } ?></strong>
         <ol>
             <?php
@@ -189,9 +201,11 @@
             $databaseHandler = new DatabaseHandler();
                 $database = $databaseHandler->getDatabase();
 
-                // TODO: Unsafe SQL
-                $stmt = $database->prepare('SELECT * FROM moves WHERE game_id = '.$_SESSION['game_id']);
+                $stmt = $database->prepare('SELECT * FROM moves WHERE game_id = ?');
+
+                $stmt->bind_param('s', $_SESSION['game_id']);
                 $stmt->execute();
+
                 $result = $stmt->get_result();
                 while ($row = $result->fetch_array()) {
                     echo '<li>'.$row[2].' '.$row[3].' '.$row[4].'</li>';

@@ -2,7 +2,7 @@
 
 session_start();
 
-use Database\DatabaseHandler as DatabaseHandler;
+use Backend\BackendHandler as BackendHandler;
 
 include_once 'Util/util.php';
 
@@ -61,20 +61,10 @@ if (!isset($board[$from])) {
         } else {
             $board[$to] = [$tile];
         }
-        $_SESSION['player'] = 1 - $_SESSION['player'];
 
-        $databaseHandler = new DatabaseHandler();
-        $database = $databaseHandler->getDatabase();
+        $backendHandler = new BackendHandler();
 
-        $stmt = $database->prepare('insert into moves
-            (game_id, type, move_from, move_to, previous_id, state)
-            values (?, "move", ?, ?, ?, ?)');
-
-        $state = $databaseHandler->getState();
-
-        $stmt->bind_param('issis', $_SESSION['game_id'], $from, $to, $_SESSION['last_move'], $state);
-        $stmt->execute();
-        $_SESSION['last_move'] = $database->insert_id;
+        $backendHandler->setMove($from, $to);
     }
     $_SESSION['board'] = $board;
 }

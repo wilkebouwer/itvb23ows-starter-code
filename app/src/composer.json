@@ -1,7 +1,9 @@
 {
   "autoload": {
     "psr-4": {
-      "Database\\":"./app/Database"
+      "Backend\\": "./app/Backend",
+      "Database\\": "./app/Database",
+      "State\\": "./app/State"
     }
   }
 }

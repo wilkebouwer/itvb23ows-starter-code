@@ -7,7 +7,7 @@ include_once 'Util/util.php';
 // TODO: Temporary
 require './bootstrap.php';
 
-use Database\DatabaseHandler as DatabaseHandler;
+use Backend\BackendHandler as BackendHandler;
 
 $piece = $_POST['piece'];
 $to = $_POST['to'];
@@ -29,20 +29,10 @@ if (!$hand[$piece]) {
 } else {
     $_SESSION['board'][$to] = [[$_SESSION['player'], $piece]];
     $_SESSION['hand'][$player][$piece]--;
-    $_SESSION['player'] = 1 - $_SESSION['player'];
 
-    $databaseHandler = new DatabaseHandler();
-    $database = $databaseHandler->getDatabase();
+    $backendHandler = new BackendHandler();
 
-    $stmt = $database->prepare('insert into moves
-        (game_id, type, move_from, move_to, previous_id, state)
-        values (?, "play", ?, ?, ?, ?)');
-
-    $state = $databaseHandler->getState();
-
-    $stmt->bind_param('issis', $_SESSION['game_id'], $piece, $to, $_SESSION['last_move'], $state);
-    $stmt->execute();
-    $_SESSION['last_move'] = $database->insert_id;
+    $backendHandler->setMove($piece, $to);
 }
 
 header('Location: ../index.php');

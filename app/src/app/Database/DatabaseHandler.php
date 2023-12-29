@@ -24,25 +24,23 @@ class DatabaseHandler
         return $this->database;
     }
 
-    // TODO: Place in different file (StateHandler)?
-    public function getState(): string
+    public function setMove($types, $gameId, $from, $to, $move, $state)
     {
-        return serialize(
-            [
-                $_SESSION['hand'],
-                $_SESSION['board'],
-                $_SESSION['player']
-            ]
-        );
+        $stmt = $this->database->prepare('INSERT INTO moves
+            (game_id, type, move_from, move_to, previous_id, state)
+            VALUES (?, "move", ?, ?, ?, ?)');
+
+        $stmt->bind_param($types, $gameId, $from, $to, $move, $state);
+
+        $stmt->execute();
     }
 
-    // TODO: Place in different file (StateHandler)?
-    public function setState($state)
-    {
-        list($a, $b, $c) = unserialize($state);
+    public function addNewGame() {
+        $this->database->prepare('INSERT INTO games VALUES ()')->execute();
+    }
 
-        $_SESSION['hand'] = $a;
-        $_SESSION['board'] = $b;
-        $_SESSION['player'] = $c;
+    public function getInsertID()
+    {
+        return $this->database->insert_id;
     }
 }
