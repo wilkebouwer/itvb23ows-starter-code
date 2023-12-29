@@ -32,7 +32,7 @@ if (!$hand[$piece]) {
 
     $backendHandler = new BackendHandler();
 
-    $backendHandler->setMove($piece, $to);
+    $backendHandler->addMove($piece, $to);
 }
 
 header('Location: ../index.php');

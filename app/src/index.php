@@ -9,9 +9,21 @@
 
     $backendHandler = new BackendHandler();
 
+    // Handle 'Pass' button press
+    if(array_key_exists('pass', $_POST)) {
+        $backendHandler->addMove(null, null);
+        header('Location: ./index.php');
+    }
+
     // Handle 'Restart' button press
     if(array_key_exists('restart', $_POST)) {
         $backendHandler->restart();
+        header('Location: ./index.php');
+    }
+
+    // Handle 'Undo' button press
+    if(array_key_exists('undo', $_POST)) {
+        $backendHandler->undo();
         header('Location: ./index.php');
     }
 
@@ -185,8 +197,8 @@
             </label>
             <input type="submit" value="Move">
         </form>
-        <form method="post" action="app/pass.php">
-            <input type="submit" value="Pass">
+        <form method="post">
+            <input type="submit" name="pass" value="Pass">
         </form>
         <form method="post">
             <input type="submit" name="restart" value="Restart">
@@ -212,8 +224,8 @@
                 }
             ?>
         </ol>
-        <form method="post" action="app/undo.php">
-            <input type="submit" value="Undo">
+        <form method="post">
+            <input type="submit" name="undo" value="Undo">
         </form>
     </body>
 </html>

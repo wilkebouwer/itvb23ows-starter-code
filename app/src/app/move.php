@@ -64,7 +64,7 @@ if (!isset($board[$from])) {
 
         $backendHandler = new BackendHandler();
 
-        $backendHandler->setMove($from, $to);
+        $backendHandler->addMove($from, $to);
     }
     $_SESSION['board'] = $board;
 }

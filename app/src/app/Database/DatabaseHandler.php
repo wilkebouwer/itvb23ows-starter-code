@@ -4,7 +4,6 @@ namespace Database;
 
 use mysqli;
 
-// TODO: Run as singleton maybe?
 class DatabaseHandler
 {
     private mysqli $database;
@@ -24,7 +23,7 @@ class DatabaseHandler
         return $this->database;
     }
 
-    public function setMove($types, $gameId, $from, $to, $move, $state)
+    public function addMove($types, $gameId, $from, $to, $move, $state)
     {
         $stmt = $this->database->prepare('INSERT INTO moves
             (game_id, type, move_from, move_to, previous_id, state)
@@ -33,6 +32,24 @@ class DatabaseHandler
         $stmt->bind_param($types, $gameId, $from, $to, $move, $state);
 
         $stmt->execute();
+    }
+
+    public function getMoves($gameID) {
+        $stmt = $this->database->prepare('SELECT * FROM moves WHERE game_id = ?');
+
+        $stmt->bind_param('s', $gameID);
+        $stmt->execute();
+
+        return $stmt->get_result();
+    }
+
+    public function getLastMove($id) {
+        $stmt = $this->database->prepare('SELECT * FROM moves WHERE id = ?');
+
+        $stmt->bind_param("s", $id);
+        $stmt->execute();
+
+        return $stmt->get_result();
     }
 
     public function addNewGame() {
