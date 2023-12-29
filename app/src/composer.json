@@ -2,6 +2,7 @@
   "autoload": {
     "psr-4": {
       "Backend\\": "./app/Backend",
+      "Board\\": "./app/Board",
       "Database\\": "./app/Database",
       "State\\": "./app/State"
     }

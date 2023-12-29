@@ -17,6 +17,7 @@ class ComposerStaticInitd751713988987e9331980363e24189ce
         ),
         'B' => 
         array (
+            'Board\\' => 6,
             'Backend\\' => 8,
         ),
     );
@@ -29,6 +30,10 @@ class ComposerStaticInitd751713988987e9331980363e24189ce
         'Database\\' => 
         array (
             0 => __DIR__ . '/../..' . '/app/Database',
+        ),
+        'Board\\' => 
+        array (
+            0 => __DIR__ . '/../..' . '/app/Board',
         ),
         'Backend\\' => 
         array (

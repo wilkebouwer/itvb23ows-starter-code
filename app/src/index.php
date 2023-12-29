@@ -2,12 +2,15 @@
     session_start();
 
     use Backend\BackendHandler as BackendHandler;
+    use Board\BoardHandler as BoardHandler;
 
     require './app/bootstrap.php';
 
     include_once 'app/Util/util.php';
 
     $backendHandler = new BackendHandler();
+
+    $boardHandler = new BoardHandler($backendHandler);
     $stateHandler = $backendHandler->getStateHandler();
 
     // Handle 'Pass' button press
@@ -42,24 +45,7 @@
         $piece = $_POST['piece'];
         $to = $_POST['to'];
 
-        $hand = $stateHandler->getHand()[$player];
-
-        if (!$hand[$piece]) {
-            $stateHandler->setError("Player does not have tile");
-        } elseif (isset($board[$to])) {
-            $stateHandler->setError('Board position is not empty');
-        } elseif (count($board) && !hasNeighbour($to, $board)) {
-            $stateHandler->setError("board position has no neighbour");
-        } elseif (array_sum($hand) < 11 && !neighboursAreSameColor($player, $to, $board)) {
-            $stateHandler->setError("Board position has opposing neighbour");
-        } elseif (array_sum($hand) <= 8 && $hand['Q']) {
-            $stateHandler->setError('Must play queen bee');
-        } else {
-            $stateHandler->setBoardPiece($to, $piece);
-            $stateHandler->decreasePiece($piece);
-
-            $backendHandler->addMove($piece, $to);
-        }
+        $boardHandler->play($board, $player, $piece, $to);
 
         header('Location: ./index.php');
     }
@@ -73,7 +59,7 @@
         $stateHandler->setError(null);
 
         if (!isset($board[$from])) {
-            $stateHandler->setError("Board position is empty");
+            $stateHandler->setError("BoardHandler position is empty");
         } elseif ($board[$from][count($board[$from]) - 1][0] != $player) {
             $stateHandler->setError("Tile is not owned by player");
         } elseif ($hand['Q']) {
