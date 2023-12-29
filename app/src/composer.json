@@ -1,7 +1,7 @@
 {
   "autoload": {
     "psr-4": {
-      "Database\\":"app/Database"
+      "Database\\":"./app/Database"
     }
   }
 }

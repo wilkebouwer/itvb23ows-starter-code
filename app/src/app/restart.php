@@ -2,6 +2,9 @@
 
 session_start();
 
+// TODO: Temporary
+require './bootstrap.php';
+
 use Database\DatabaseHandler as DatabaseHandler;
 
 $_SESSION['board'] = [];

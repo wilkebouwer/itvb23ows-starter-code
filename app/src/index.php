@@ -184,7 +184,7 @@
         <ol>
             <?php
 
-            use app\Database\DatabaseHandler as DatabaseHandler;
+            use Database\DatabaseHandler as DatabaseHandler;
 
             $databaseHandler = new DatabaseHandler();
                 $database = $databaseHandler->getDatabase();

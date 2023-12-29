@@ -4,6 +4,9 @@ session_start();
 
 include_once 'Util/util.php';
 
+// TODO: Temporary
+require './bootstrap.php';
+
 use Database\DatabaseHandler as DatabaseHandler;
 
 $piece = $_POST['piece'];
