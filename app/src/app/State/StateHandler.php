@@ -66,7 +66,10 @@ class StateHandler
     }
 
     public function getBoard() {
-        return $_SESSION['board'];
+        if (isset($_SESSION['board'])) {
+            return $_SESSION['board'];
+        }
+        return null;
     }
 
     public function setBoard($board) {
@@ -106,5 +109,4 @@ class StateHandler
     public function getHand() {
         return $_SESSION['hand'];
     }
-
 }

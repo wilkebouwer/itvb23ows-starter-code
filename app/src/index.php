@@ -4,39 +4,35 @@
     use Backend\BackendHandler as BackendHandler;
     use Board\BoardHandler as BoardHandler;
 
-    require './app/bootstrap.php';
+    require_once './vendor/autoload.php';
 
     $backendHandler = new BackendHandler();
 
     $boardHandler = new BoardHandler($backendHandler);
     $stateHandler = $backendHandler->getStateHandler();
 
+    $indexLocationHeader = "Location: ./index.php";
+
+    // Handle 'Restart' button press and unset board (initial condition)
+    if (array_key_exists('restart', $_POST) || $stateHandler->getBoard() == null) {
+        $backendHandler->restart();
+    }
+
+    // It's only safe after restart to set board variable
+    $board = $stateHandler->getBoard();
+    $player = $stateHandler->getPlayer();
+
     // Handle 'Pass' button press
     if(array_key_exists('pass', $_POST)) {
         $backendHandler->addMove(null, null);
-        header('Location: ./index.php');
-    }
-
-    // Handle 'Restart' button press
-    if(array_key_exists('restart', $_POST)) {
-        $backendHandler->restart();
-        header('Location: ./index.php');
+        header($indexLocationHeader);
     }
 
     // Handle 'Undo' button press
     if(array_key_exists('undo', $_POST)) {
         $backendHandler->undo();
-        header('Location: ./index.php');
+        header($indexLocationHeader);
     }
-
-    if (!isset($_SESSION['board'])) {
-        $backendHandler->restart();
-        header('Location: ./index.php');
-        exit(0);
-    }
-
-    $board = $stateHandler->getBoard();
-    $player = $stateHandler->getPlayer();
 
     // Handle 'Play' button press
     if(array_key_exists('play', $_POST)) {
@@ -45,7 +41,7 @@
 
         $boardHandler->play($board, $player, $piece, $to);
 
-        header('Location: ./index.php');
+        header($indexLocationHeader);
     }
 
     // Handle 'Move' button press
@@ -55,22 +51,20 @@
 
         $boardHandler->move($board, $player, $from, $to);
 
-        header('Location: ./index.php');
+        header($indexLocationHeader);
     }
 
     $hand = $stateHandler->getHand();
+    $to = $boardHandler->getPossiblePositions($board);
 
-    $to = [];
-    foreach ($boardHandler->getOffsets() as $pq) {
-        foreach (array_keys($board) as $pos) {
-            $pq2 = explode(',', $pos);
-            $to[] = ($pq[0] + $pq2[0]).','.($pq[1] + $pq2[1]);
+    // Used later to print White and Black's hand
+    function printHand($hand, $player) {
+        foreach ($hand[$player] as $tile => $ct) {
+        for ($i = 0; $i < $ct; $i++) {
+            echo '<div class="tile player' . $player . '"><span>'.$tile."</span></div> ";
         }
     }
-    $to = array_unique($to);
-    if (!count($to)) {
-        $to[] = '0,0';
-    }
+}
 ?>
 <!DOCTYPE html>
 <html lang="en">
@@ -81,8 +75,10 @@
     <body>
         <div class="board">
             <?php
-                $min_p = 1000;
-                $min_q = 1000;
+                $min_p = INF;
+                $min_q = INF;
+
+                // Get smallest X and Y position values of the board
                 foreach ($board as $pos => $tile) {
                     $pq = explode(',', $pos);
                     if ($pq[0] < $min_p) {
@@ -92,6 +88,8 @@
                         $min_q = $pq[1];
                     }
                 }
+
+                // Print board
                 foreach (array_filter($board) as $pos => $tile) {
                     $pq = explode(',', $pos);
                     $h = count($tile);
@@ -113,30 +111,29 @@
         <div class="hand">
             White:
             <?php
-                foreach ($hand[0] as $tile => $ct) {
-                    for ($i = 0; $i < $ct; $i++) {
-                        echo '<div class="tile player0"><span>'.$tile."</span></div> ";
-                    }
-                }
+                printHand($hand, 0);
             ?>
         </div>
         <div class="hand">
             Black:
             <?php
-            foreach ($hand[1] as $tile => $ct) {
-                for ($i = 0; $i < $ct; $i++) {
-                    echo '<div class="tile player1"><span>'.$tile."</span></div> ";
-                }
-            }
+                printHand($hand, 1);
             ?>
         </div>
         <div class="turn">
-            Turn: <?php if ($player == 0) { echo "White"; } else { echo "Black"; } ?>
+            Turn: <?php
+                        if ($player == 0) {
+                            echo "White";
+                        } else {
+                            echo "Black";
+                        }
+                  ?>
         </div>
         <form method="post">
             <label>
                 <select name="piece">
                     <?php
+                        // Add pieces in hand of current player as dropdown options
                         foreach ($hand[$player] as $tile => $ct) {
                             echo "<option value=\"$tile\">$tile</option>";
                         }
@@ -146,6 +143,7 @@
             <label>
                 <select name="to">
                     <?php
+                        // Add possible play positions as dropdown options
                         foreach ($to as $pos) {
                             echo "<option value=\"$pos\">$pos</option>";
                         }
@@ -158,6 +156,7 @@
             <label>
                 <select name="from">
                     <?php
+                        // Add all piece positions to dropdown options
                         foreach (array_keys($board) as $pos) {
                             echo "<option value=\"$pos\">$pos</option>";
                         }
@@ -167,6 +166,7 @@
             <label>
                 <select name="to">
                     <?php
+                        // Add possible move positions as dropdown options
                         foreach ($to as $pos) {
                             echo "<option value=\"$pos\">$pos</option>";
                         }
@@ -182,9 +182,18 @@
             <input type="submit" name="restart" value="Restart">
         </form>
 
-        <strong><?php if ($stateHandler->getError() !== null) { echo $stateHandler->getError(); $stateHandler->setError(null); } ?></strong>
+        <strong>
+            <?php
+                // Print and reset error
+                if ($stateHandler->getError() !== null) {
+                    echo $stateHandler->getError();
+                    $stateHandler->setError(null);
+                }
+            ?>
+        </strong>
         <ol>
             <?php
+                // Add list of all moves that have been done this game
                 $moves = $backendHandler->getMoves();
                 while ($row = $moves->fetch_array()) {
                     echo '<li>'.$row[2].' '.$row[3].' '.$row[4].'</li>';

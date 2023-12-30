@@ -27,6 +27,24 @@ class BoardHandler
         return $this->offsets;
     }
 
+    // Get possible move/play positions
+    public function getPossiblePositions($board): array
+    {
+        $to = [];
+        foreach ($this->getOffsets() as $pq) {
+            foreach (array_keys($board) as $pos) {
+                $pq2 = explode(',', $pos);
+                $to[] = ($pq[0] + $pq2[0]).','.($pq[1] + $pq2[1]);
+            }
+        }
+        $to = array_unique($to);
+        if (!count($to)) {
+            $to[] = '0,0';
+        }
+
+        return $to;
+    }
+
     public function play($board, $player, $piece, $to)
     {
         $stateHandler = $this->backendHandler->getStateHandler();
