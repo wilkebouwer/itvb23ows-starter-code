@@ -138,11 +138,11 @@ class BoardHandler
         $a = explode(',', $a);
         $b = explode(',', $b);
 
-        if ($a[0] == $b[0] && abs($a[1] - $b[1]) == 1) {
-            return true;
-        } elseif ($a[1] == $b[1] && abs($a[0] - $b[0]) == 1) {
-            return true;
-        } elseif ($a[0] + $a[1] == $b[0] + $b[1]) {
+        if (
+            $a[0] == $b[0] && abs($a[1] - $b[1]) == 1 ||
+            $a[1] == $b[1] && abs($a[0] - $b[0]) == 1 ||
+            $a[0] + $a[1] == $b[0] + $b[1]
+        ) {
             return true;
         }
 
@@ -180,14 +180,14 @@ class BoardHandler
 
     private function slide($board, $from, $to): bool
     {
-        if (!$this->hasNeighbour($to, $board)) {
+        if (!$this->hasNeighbour($to, $board) || !$this->isNeighbour($from, $to)) {
             return false;
         }
-        if (!$this->isNeighbour($from, $to)) {
-            return false;
-        }
+
         $b = explode(',', $to);
         $common = [];
+
+        // TODO: What does this do?
         foreach ($this->offsets as $pq) {
             $p = $b[0] + $pq[0];
             $q = $b[1] + $pq[1];
@@ -195,7 +195,13 @@ class BoardHandler
                 $common[] = $p.",".$q;
             }
         }
-        if (!$board[$common[0]] && !$board[$common[1]] && !$board[$from] && !$board[$to]) {
+
+        if (
+            !$board[$common[0]] &&
+            !$board[$common[1]] &&
+            !$board[$from] &&
+            !$board[$to]
+        ) {
             return false;
         }
 

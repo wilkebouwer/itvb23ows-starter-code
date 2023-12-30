@@ -135,7 +135,9 @@
                     <?php
                         // Add pieces in hand of current player as dropdown options
                         foreach ($hand[$player] as $tile => $ct) {
-                            echo "<option value=\"$tile\">$tile</option>";
+                            if ($ct > 0) {
+                                echo "<option value=\"$tile\">$tile</option>";
+                            }
                         }
                     ?>
                 </select>
