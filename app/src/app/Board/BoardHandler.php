@@ -54,11 +54,11 @@ class BoardHandler
         if (!$hand[$piece]) {
             $stateHandler->setError("Player does not have tile");
         } elseif (isset($board[$to])) {
-            $stateHandler->setError('BoardHandler position is not empty');
+            $stateHandler->setError('Board position is not empty');
         } elseif (count($board) && !$this->hasNeighbour($to, $board)) {
-            $stateHandler->setError("board position has no neighbour");
+            $stateHandler->setError("Board position has no neighbour");
         } elseif (array_sum($hand) < 11 && !$this->neighboursAreSameColor($player, $to, $board)) {
-            $stateHandler->setError("BoardHandler position has opposing neighbour");
+            $stateHandler->setError("Board position has opposing neighbour");
         } elseif (array_sum($hand) <= 8 && $hand['Q']) {
             $stateHandler->setError('Must play queen bee');
         } else {
@@ -76,53 +76,61 @@ class BoardHandler
         $stateHandler->setError(null);
 
         if (!isset($board[$from])) {
-            $stateHandler->setError("BoardHandler position is empty");
+            $stateHandler->setError("Board position is empty");
+        } elseif ($from == $to) {
+            $stateHandler->setError("Tile must move");
         } elseif ($board[$from][count($board[$from]) - 1][0] != $player) {
             $stateHandler->setError("Tile is not owned by player");
         } elseif ($hand['Q']) {
             $stateHandler->setError("Queen bee is not played");
-        } else {
-            $tile = array_pop($board[$from]);
-            if (!$this->hasNeighbour($to, $board)) {
+        } elseif (!$this->hasNeighbour($to, $board)) {
                 $stateHandler->setError("Move would split hive");
-            } else {
-                $all = array_keys($board);
-                $queue = [array_shift($all)];
-                while ($queue) {
-                    $next = explode(',', array_shift($queue));
-                    foreach ($this->offsets as $pq) {
-                        list($p, $q) = $pq;
-                        $p += $next[0];
-                        $q += $next[1];
-                        if (in_array("$p,$q", $all)) {
-                            $queue[] = "$p,$q";
-                            $all = array_diff($all, ["$p,$q"]);
-                        }
-                    }
-                }
-                if ($all) {
-                    $stateHandler->setError("Move would split hive");
-                } else {
-                    if ($from == $to) {
-                        $stateHandler->setError("Tile must move");
-                    } elseif (isset($board[$to]) && $tile[1] != "B") {
-                        $stateHandler->setError("Tile not empty");
-                    } elseif ($tile[1] == "Q" || $tile[1] == "B") {
-                        if (!$this->slide($board, $from, $to)) {
-                            $stateHandler->setError("Tile must slide");
-                        }
-                    }
-                }
+        } else {
+            // Tile variable can only set if $board[$from] is set
+            $tile = array_pop($board[$from]);
+            $all = $this->getSetBoardPositionsInOffsets($board);
+
+            if ($all) {
+                $stateHandler->setError("Move would split hive");
+            } elseif (isset($board[$to]) && $tile[1] != "B") {
+                $stateHandler->setError("Tile not empty");
+            } elseif (
+                ($tile[1] == "Q" || $tile[1] == "B") &&
+                !$this->slide($board, $from, $to)
+            ) {
+                $stateHandler->setError("Tile must slide");
             }
+
+            // Make move if there are no errors
             if ($stateHandler->getError() != null) {
-                $board[$from] = [$tile];
-            } else {
                 $board[$to] = [$tile];
+                $stateHandler->setBoard($board);
 
                 $this->backendHandler->addMove($from, $to);
             }
-            $stateHandler->setBoard($board);
         }
+    }
+
+    // Make a queue of all set board positions that are in offsets
+    private function getSetBoardPositionsInOffsets($board): array
+    {
+        $all = array_keys($board);
+        $queue = [array_shift($all)];
+
+        while ($queue) {
+            $next = explode(',', array_shift($queue));
+            foreach ($this->offsets as $pq) {
+                list($p, $q) = $pq;
+                $p += $next[0];
+                $q += $next[1];
+                if (in_array("$p,$q", $all)) {
+                    $queue[] = "$p,$q";
+                    $all = array_diff($all, ["$p,$q"]);
+                }
+            }
+        }
+
+        return $all;
     }
 
     private function isNeighbour($a, $b): bool
