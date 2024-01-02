@@ -60,9 +60,11 @@ class BoardHandler
             $stateHandler->setError("Board position has no neighbour");
         } elseif (array_sum($hand) < 11 && !$this->neighboursAreSameColor($player, $to, $board)) {
             $stateHandler->setError("Board position has opposing neighbour");
-        } elseif (array_sum($hand) <= 8 && $hand['Q']) {
+        } elseif ($piece != 'Q' && array_sum($hand) <= 8 && $hand['Q']) {
             $stateHandler->setError('Must play queen bee');
         } else {
+            $stateHandler->setError(null);
+
             $stateHandler->setBoardPiece($player, $piece, $to);
 
             $this->backendHandler->addMove($piece, $to);
@@ -80,7 +82,10 @@ class BoardHandler
             $stateHandler->setError("Board position is empty");
         } elseif ($from == $to) {
             $stateHandler->setError("Tile must move");
-        } elseif ($board[$from][count($board[$from]) - 1][0] != $player) {
+        } elseif (
+            isset($board[$from][count($board[$from]) - 1]) &&
+            $board[$from][count($board[$from]) - 1][0] != $player
+        ) {
             $stateHandler->setError("Tile is not owned by player");
         } elseif ($hand['Q']) {
             $stateHandler->setError("Queen bee is not played");
@@ -100,10 +105,10 @@ class BoardHandler
                 !$this->slide($board, $from, $to)
             ) {
                 $stateHandler->setError("Tile must slide");
-            }
+            } else {
+                $stateHandler->setError(null);
 
-            // Make move if there are no errors
-            if ($stateHandler->getError() != null) {
+                unset($board[$from]);
                 $board[$to] = [$tile];
                 $stateHandler->setBoard($board);
 
@@ -200,16 +205,28 @@ class BoardHandler
 
         // Return false if positions are invalid
         if (
-            (!isset($board[$common[0]]) || !$board[$common[0]]) &&
-            (!isset($board[$common[1]]) || !$board[$common[1]]) &&
-            (!isset($board[$from]) || !$board[$from]) &&
-            (!isset($board[$to]) || !$board[$to])
+            !isset($board[$common[0]]) && !$board[$common[0]] &&
+            !isset($board[$common[1]]) && !$board[$common[1]] &&
+            !isset($board[$from]) && !$board[$from] &&
+            !isset($board[$to]) && !$board[$to]
         ) {
             return false;
         }
 
+        $firstCommonLen = $board[$common[0]] ?? 0;
+        $firstCommonLen = $this->len($firstCommonLen);
+
+        $secondCommonLen = $board[$common[1]] ?? 0;
+        $secondCommonLen = $this->len($secondCommonLen);
+
+        $fromLen = $board[$from] ?? 0;
+        $fromLen = $this->len($fromLen);
+
+        $toLen = $board[$to] ?? 0;
+        $toLen = $this->len($toLen);
+
         // TODO: Has something to do with multiple tiles on one spot?
-        return min($this->len($board[$common[0]]), $this->len($board[$common[1]]))
-            <= max($this->len($board[$from]), $this->len($board[$to]));
+        return min($firstCommonLen, $secondCommonLen)
+            <= max($fromLen, $toLen);
     }
 }

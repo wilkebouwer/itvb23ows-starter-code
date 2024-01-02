@@ -22,10 +22,6 @@
     $board = $stateHandler->getBoard();
     $player = $stateHandler->getPlayer();
 
-    // TODO
-    //print("Board");
-    //print("<pre>".print_r($board,true)."</pre>");
-
     // Handle 'Pass' button press
     if(array_key_exists('pass', $_POST)) {
         $backendHandler->addMove(null, null);
@@ -60,6 +56,10 @@
 
     $hand = $stateHandler->getHand();
     $to = $boardHandler->getPossiblePositions($board);
+
+    // TODO: Debug
+    //print("Board");
+    //print("<pre>".print_r($board,true)."</pre>");
 
     // Used later to print White and Black's hand
     function printHand($hand, $player) {
@@ -193,7 +193,6 @@
                 // Print and reset error
                 if ($stateHandler->getError() !== null) {
                     echo $stateHandler->getError();
-                    $stateHandler->setError(null);
                 }
             ?>
         </strong>
