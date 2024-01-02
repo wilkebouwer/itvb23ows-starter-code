@@ -8,8 +8,8 @@ use State\StateHandler;
 class BackendHandler
 {
 
-    private DatabaseHandler $databaseHandler;
-    private StateHandler $stateHandler;
+    protected DatabaseHandler $databaseHandler;
+    protected StateHandler $stateHandler;
 
     public function __construct()
     {

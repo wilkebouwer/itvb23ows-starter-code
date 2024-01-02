@@ -7,6 +7,9 @@ $baseDir = dirname($vendorDir);
 
 return array(
     'State\\' => array($baseDir . '/app/State'),
+    'PhpParser\\' => array($vendorDir . '/nikic/php-parser/lib/PhpParser'),
+    'Doctrine\\Instantiator\\' => array($vendorDir . '/doctrine/instantiator/src/Doctrine/Instantiator'),
+    'DeepCopy\\' => array($vendorDir . '/myclabs/deep-copy/src/DeepCopy'),
     'Database\\' => array($baseDir . '/app/Database'),
     'Board\\' => array($baseDir . '/app/Board'),
     'Backend\\' => array($baseDir . '/app/Backend'),
