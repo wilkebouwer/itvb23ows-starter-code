@@ -22,6 +22,10 @@
     $board = $stateHandler->getBoard();
     $player = $stateHandler->getPlayer();
 
+    // TODO
+    //print("Board");
+    //print("<pre>".print_r($board,true)."</pre>");
+
     // Handle 'Pass' button press
     if(array_key_exists('pass', $_POST)) {
         $backendHandler->addMove(null, null);

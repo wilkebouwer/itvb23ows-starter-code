@@ -6,6 +6,7 @@ use Backend\BackendHandler;
 
 class BoardHandler
 {
+    // All possible directions to move in relative to a position
     private array $offsets =
         [
             [0, 1],
@@ -88,7 +89,7 @@ class BoardHandler
         } else {
             // Tile variable can only set if $board[$from] is set
             $tile = array_pop($board[$from]);
-            $all = $this->getSetBoardPositionsInOffsets($board);
+            $all = $this->getSplitTiles($board);
 
             if ($all) {
                 $stateHandler->setError("Move would split hive");
@@ -111,8 +112,8 @@ class BoardHandler
         }
     }
 
-    // Make a queue of all set board positions that are in offsets
-    private function getSetBoardPositionsInOffsets($board): array
+    // Makes an array of all tiles that are not attached to the hive
+    private function getSplitTiles($board): array
     {
         $all = array_keys($board);
         $queue = [array_shift($all)];
@@ -178,6 +179,7 @@ class BoardHandler
         return $tile ? count($tile) : 0;
     }
 
+    // Give from and to, and return if move of one position is allowed
     private function slide($board, $from, $to): bool
     {
         if (!$this->hasNeighbour($to, $board) || !$this->isNeighbour($from, $to)) {
@@ -187,7 +189,7 @@ class BoardHandler
         $b = explode(',', $to);
         $common = [];
 
-        // TODO: What does this do?
+        // Make array of all neighbouring positions shared by $from and $to position
         foreach ($this->offsets as $pq) {
             $p = $b[0] + $pq[0];
             $q = $b[1] + $pq[1];
@@ -196,15 +198,17 @@ class BoardHandler
             }
         }
 
+        // Return false if positions are invalid
         if (
-            !$board[$common[0]] &&
-            !$board[$common[1]] &&
-            !$board[$from] &&
-            !$board[$to]
+            (!isset($board[$common[0]]) || !$board[$common[0]]) &&
+            (!isset($board[$common[1]]) || !$board[$common[1]]) &&
+            (!isset($board[$from]) || !$board[$from]) &&
+            (!isset($board[$to]) || !$board[$to])
         ) {
             return false;
         }
 
+        // TODO: Has something to do with multiple tiles on one spot?
         return min($this->len($board[$common[0]]), $this->len($board[$common[1]]))
             <= max($this->len($board[$from]), $this->len($board[$to]));
     }
