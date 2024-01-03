@@ -33,6 +33,12 @@ pipeline {
 	    	sh 'docker-compose up -d app database'
             }
         }
+
+	stage('PHPUnit Tests') {
+            steps {
+	    	sh 'docker exec tvb23ows-starter-code_${BRANCH_NAME}_app_1 ./vendor/bin/phpunit'
+            }
+        }
     }
 
     post {

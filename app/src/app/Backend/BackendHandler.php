@@ -8,8 +8,8 @@ use State\StateHandler;
 class BackendHandler
 {
 
-    private DatabaseHandler $databaseHandler;
-    private StateHandler $stateHandler;
+    protected DatabaseHandler $databaseHandler;
+    protected StateHandler $stateHandler;
 
     public function __construct()
     {
@@ -45,22 +45,8 @@ class BackendHandler
 
     public function addMove($from, $to)
     {
-        if ($from != null) {
-            $fromType = 's';
-        } else {
-            $fromType = '';
-        }
-        if ($to != null) {
-            $toType = 's';
-        } else {
-            $toType = '';
-        }
-
-        // String of all statement variable types
-        $types = 'i' . $fromType . $toType . 'is';
-
         $this->databaseHandler->addMove(
-            $types,
+            "issis",
             $this->stateHandler->getGameID(),
             $from,
             $to,

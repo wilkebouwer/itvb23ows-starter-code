@@ -46,6 +46,7 @@ class StateHandler
                     ]
             ];
         $_SESSION['player'] = 0;
+        unset($_SESSION['error']);
     }
 
     public function switchPlayer() {
@@ -66,7 +67,10 @@ class StateHandler
     }
 
     public function getBoard() {
-        return $_SESSION['board'];
+        if (isset($_SESSION['board'])) {
+            return $_SESSION['board'];
+        }
+        return null;
     }
 
     public function setBoard($board) {
