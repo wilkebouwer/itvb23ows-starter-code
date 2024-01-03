@@ -88,4 +88,43 @@ class BoardTest extends TestCase
         $boardHandler->play('B', '-4,0');
         $this->assertArrayHasKey('-4,0', $stateHandler->getBoard());
     }
+
+    // Issue #4
+    public function testPlaceTileOnPreviousMovePosition() {
+        $backendHandler = new BackendHandlerTester();
+        $boardHandler = new BoardHandler($backendHandler);
+        $stateHandler = $backendHandler->getStateHandler();
+
+        $stateHandler->restart();
+
+        // White
+        $boardHandler->play('Q', '0,0');
+
+        // Black
+        $boardHandler->play('Q', '1,0');
+
+        // White
+        $boardHandler->play('A', '-1,0');
+
+        // Black
+        $boardHandler->play('A', '2,0');
+
+        // White
+        $boardHandler->move('-1,0', '0,-1');
+        $this->assertArrayNotHasKey('-1,0', $stateHandler->getBoard());
+        $this->assertArrayHasKey('0,-1', $stateHandler->getBoard());
+
+        // Black
+        $boardHandler->move('2,0', '2,-1');
+        $this->assertArrayNotHasKey('2,0', $stateHandler->getBoard());
+        $this->assertArrayHasKey('2,-1', $stateHandler->getBoard());
+
+        // White
+        $boardHandler->play('A', '-1,0');
+        $this->assertArrayHasKey('-1,0', $stateHandler->getBoard());
+
+        // Black
+        $boardHandler->play('A', '2,0');
+        $this->assertArrayHasKey('2,0', $stateHandler->getBoard());
+    }
 }
