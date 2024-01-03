@@ -30,6 +30,7 @@ class BoardTest extends TestCase
         $stateHandler->restart();
 
         // White
+<<<<<<< HEAD
         $boardHandler->play(
             $stateHandler->getBoard(),
             $stateHandler->getPlayer(),
@@ -52,6 +53,15 @@ class BoardTest extends TestCase
             '0,0',
             '0,1'
         );
+=======
+        $boardHandler->play('Q', '0,0');
+
+        // Black
+        $boardHandler->play('Q', '1,0');
+
+        // White
+        $boardHandler->move('0,0', '0,1');
+>>>>>>> 27030a2 (Refactor: Make BoardHandler function calls cleaner)
 
         $this->assertArrayHasKey('0,1', $stateHandler->getBoard());
     }

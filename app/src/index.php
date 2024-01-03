@@ -39,7 +39,7 @@
         $piece = $_POST['piece'];
         $to = $_POST['to'];
 
-        $boardHandler->play($board, $player, $piece, $to);
+        $boardHandler->play($piece, $to);
 
         header($indexLocationHeader);
     }
@@ -49,13 +49,13 @@
         $from = $_POST['from'];
         $to = $_POST['to'];
 
-        $boardHandler->move($board, $player, $from, $to);
+        $boardHandler->move($from, $to);
 
         header($indexLocationHeader);
     }
 
     $hand = $stateHandler->getHand();
-    $to = $boardHandler->getPossiblePositions($board);
+    $to = $boardHandler->getPossiblePositions();
 
     // TODO: Debug
     //print("Board");
