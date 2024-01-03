@@ -1,7 +1,3 @@
 .env
 .idea/
-<<<<<<< HEAD
-app/src/.phpunit.result.cache
-=======
 .phpunit.result.cache
->>>>>>> 27030a2 (Refactor: Make BoardHandler function calls cleaner)
