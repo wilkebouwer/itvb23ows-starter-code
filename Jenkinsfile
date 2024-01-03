@@ -36,7 +36,7 @@ pipeline {
 
 	stage('PHPUnit Tests') {
             steps {
-	    	sh 'docker exec tvb23ows-starter-code_${BRANCH_NAME}_app_1 ./vendor/bin/phpunit'
+	    	sh 'docker exec $(docker ps -aq --filter name=${BRANCH_NAME}_app) ./vendor/bin/phpunit'
             }
         }
     }
