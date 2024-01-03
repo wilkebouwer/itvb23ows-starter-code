@@ -36,7 +36,7 @@ pipeline {
 
 	stage('PHPUnit Tests') {
             steps {
-	    	sh 'docker exec -it itvb23ows-starter-code-app-1 ./vendor/bin/phpunit'
+	    	sh 'docker exec -it itvb23ows-starter-code_${env.BRANCH_NAME}_app-1 ./vendor/bin/phpunit'
             }
         }
     }
