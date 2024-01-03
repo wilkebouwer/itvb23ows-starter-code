@@ -22,6 +22,60 @@ class BackendHandlerTester extends BackendHandler {
 
 class BoardTest extends TestCase
 {
+    // Issue #1
+    public function testOnlyGetAvailablePiecesForPlayer() {
+        $backendHandler = new BackendHandlerTester();
+        $boardHandler = new BoardHandler($backendHandler);
+        $stateHandler = $backendHandler->getStateHandler();
+
+        $stateHandler->restart();
+
+        // White
+        $this->assertContains('Q', $boardHandler->getAvailableHandPieces());
+        $boardHandler->play('Q', '0,0');
+
+        // Black
+        $this->assertContains('Q', $boardHandler->getAvailableHandPieces());
+        $boardHandler->play('Q', '1,0');
+
+        // White
+        $this->assertNotContains('Q', $boardHandler->getAvailableHandPieces());
+        $boardHandler->play('B', '-1,0');
+
+        // Black
+        $this->assertNotContains('Q', $boardHandler->getAvailableHandPieces());
+    }
+
+    // Issue #1
+    public function testOnlyGetAvailableMovePositionsForPlayer() {
+        $backendHandler = new BackendHandlerTester();
+        $boardHandler = new BoardHandler($backendHandler);
+        $stateHandler = $backendHandler->getStateHandler();
+
+        $stateHandler->restart();
+
+        // White
+        $boardHandler->play('A', '0,0');
+
+        // Black
+        $this->assertNotContains('0,0', $boardHandler->getPlayerPiecePositions());
+        $boardHandler->play('A', '1,0');
+
+        // White
+        $this->assertContains('0,0', $boardHandler->getPlayerPiecePositions());
+        $this->assertNotContains('1,0', $boardHandler->getPlayerPiecePositions());
+        $boardHandler->play('A', '-1,0');
+
+        // Black
+        $this->assertContains('1,0', $boardHandler->getPlayerPiecePositions());
+        $this->assertNotContains('-1,0', $boardHandler->getPlayerPiecePositions());
+        $boardHandler->play('A', '2,0');
+
+        // White
+        $this->assertContains('-1,0', $boardHandler->getPlayerPiecePositions());
+        $this->assertNotContains('2,0', $boardHandler->getPlayerPiecePositions());
+        $boardHandler->play('A', '-2,0');
+    }
 
     // Issue #2
     public function testMoveToUninitializedPosition() {

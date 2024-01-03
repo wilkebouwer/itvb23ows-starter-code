@@ -138,10 +138,8 @@
                 <select name="piece">
                     <?php
                         // Add pieces in hand of current player as dropdown options
-                        foreach ($hand[$player] as $tile => $ct) {
-                            if ($ct > 0) {
-                                echo "<option value=\"$tile\">$tile</option>";
-                            }
+                        foreach ($boardHandler->getAvailableHandPieces() as $piece) {
+                            echo "<option value=\"$piece\">$piece</option>";
                         }
                     ?>
                 </select>
@@ -162,11 +160,9 @@
             <label>
                 <select name="from">
                     <?php
-                        // Add all piece positions to dropdown options
-                        foreach ($board as $pos => $tiles) {
-                            if (end($tiles)[0] == $stateHandler->getPlayer()) {
-                                echo "<option value=\"$pos\">$pos</option>";
-                            }
+                        // Add all player piece positions to dropdown options
+                        foreach ($boardHandler->getPlayerPiecePositions() as $pos) {
+                            echo "<option value=\"$pos\">$pos</option>";
                         }
                     ?>
                 </select>

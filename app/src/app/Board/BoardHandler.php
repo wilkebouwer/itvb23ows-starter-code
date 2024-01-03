@@ -49,6 +49,33 @@ class BoardHandler
         return $to;
     }
 
+    public function getAvailableHandPieces(): array
+    {
+        $player = $this->stateHandler->getPlayer();
+        $hand = $this->stateHandler->getHand()[$player];
+
+        $pieces = [];
+        foreach ($hand as $tile => $ct) {
+            if ($ct > 0) {
+                $pieces[] = $tile;
+            }
+        }
+
+        return $pieces;
+    }
+
+    public function getPlayerPiecePositions(): array
+    {
+        $to = [];
+        foreach ($this->stateHandler->getBoard() as $pos => $tiles) {
+            if (end($tiles)[0] == $this->stateHandler->getPlayer()) {
+                $to[] = $pos;
+            }
+        }
+
+        return $to;
+    }
+
     public function play($piece, $to)
     {
         $player = $this->stateHandler->getPlayer();
