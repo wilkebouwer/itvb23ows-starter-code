@@ -4,11 +4,7 @@
     use Backend\BackendHandler as BackendHandler;
     use Board\BoardHandler as BoardHandler;
 
-<<<<<<< HEAD
-    require_once './app/bootstrap.php';
-=======
     require_once './vendor/autoload.php';
->>>>>>> features-1
 
     $backendHandler = new BackendHandler();
 
@@ -17,8 +13,6 @@
 
     $indexLocationHeader = "Location: ./index.php";
 
-<<<<<<< HEAD
-=======
     // Handle 'Restart' button press and unset board (initial condition)
     if (array_key_exists('restart', $_POST) || $stateHandler->getBoard() == null) {
         $backendHandler->restart();
@@ -28,20 +22,16 @@
     $board = $stateHandler->getBoard();
     $player = $stateHandler->getPlayer();
 
->>>>>>> features-1
     // Handle 'Pass' button press
     if(array_key_exists('pass', $_POST)) {
         $backendHandler->addMove(null, null);
         header($indexLocationHeader);
-<<<<<<< HEAD
     }
 
     // Handle 'Restart' button press
     if(array_key_exists('restart', $_POST)) {
         $backendHandler->restart();
         header($indexLocationHeader);
-=======
->>>>>>> features-1
     }
 
     // Handle 'Undo' button press
@@ -50,18 +40,6 @@
         header($indexLocationHeader);
     }
 
-<<<<<<< HEAD
-    if (!isset($_SESSION['board'])) {
-        $backendHandler->restart();
-        header($indexLocationHeader);
-        exit(0);
-    }
-
-    $board = $stateHandler->getBoard();
-    $player = $stateHandler->getPlayer();
-
-=======
->>>>>>> features-1
     // Handle 'Play' button press
     if(array_key_exists('play', $_POST)) {
         $piece = $_POST['piece'];
