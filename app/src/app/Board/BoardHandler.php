@@ -171,6 +171,7 @@ class BoardHandler
 
     private function neighboursAreSameColor($a): bool
     {
+        $player = $this->stateHandler->getPlayer();
         $board = $this->stateHandler->getBoard();
 
         foreach ($board as $b => $st) {
@@ -178,7 +179,7 @@ class BoardHandler
                 continue;
             }
             $c = $st[count($st) - 1][0];
-            if ($c != $board && $this->isNeighbour($a, $b)) {
+            if ($c != $player && $this->isNeighbour($a, $b)) {
                 return false;
             }
         }
