@@ -163,8 +163,10 @@
                 <select name="from">
                     <?php
                         // Add all piece positions to dropdown options
-                        foreach (array_keys($board) as $pos) {
-                            echo "<option value=\"$pos\">$pos</option>";
+                        foreach ($board as $pos => $tiles) {
+                            if (end($tiles)[0] == $stateHandler->getPlayer()) {
+                                echo "<option value=\"$pos\">$pos</option>";
+                            }
                         }
                     ?>
                 </select>
