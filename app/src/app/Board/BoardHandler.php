@@ -76,6 +76,22 @@ class BoardHandler
         return $to;
     }
 
+    public function lostGame($player): bool
+    {
+        foreach ($this->stateHandler->getBoard() as $pos => $tiles) {
+            $topTile = end($tiles);
+
+            if (
+                $topTile[0] == $player &&
+                $topTile[1] == 'Q' &&
+                count($this->getNeighbours($pos)) == 6
+            ) {
+                return true;
+            }
+        }
+        return false;
+    }
+
     public function play($piece, $to)
     {
         $player = $this->stateHandler->getPlayer();
@@ -137,8 +153,13 @@ class BoardHandler
             ) {
                 $this->stateHandler->setError("Tile must slide");
            } elseif (
+                $tile[1] == "A" &&
+                !$this->antSlide($from, $to)
+            ) {
+                $this->stateHandler->setError("Tile must slide");
+            } elseif (
                 $tile[1] == "S" &&
-                !$this->soldierSlide($from, $to)
+                !$this->spiderSlide($from, $to)
             ) {
                 $this->stateHandler->setError("Tile must slide");
             } else {
@@ -203,6 +224,32 @@ class BoardHandler
             }
         }
         return false;
+    }
+
+    private function getNeighbours($a): array
+    {
+        $board = $this->stateHandler->getBoard();
+
+        $neighbours = [];
+        $b = explode(',', $a);
+
+        // Make array of all neighbouring positions shared by $from and $to position
+        $common = [];
+        foreach ($this->offsets as $pq) {
+            $p = $b[0] + $pq[0];
+            $q = $b[1] + $pq[1];
+
+            $position = $p . "," . $q;
+
+            if (
+                isset($board[$position]) &&
+                $this->isNeighbour($a, $position)
+            ) {
+                $neighbours[] = $position;
+            }
+        }
+
+        return $neighbours;
     }
 
     private function neighboursAreSameColor($a): bool
@@ -275,7 +322,7 @@ class BoardHandler
             <= max($fromLen, $toLen);
     }
 
-    public function soldierSlide($from, $to): bool
+    private function antSlide($from, $to): bool
     {
         $board = $this->stateHandler->getBoard();
 
@@ -314,5 +361,11 @@ class BoardHandler
         }
 
         return false;
+    }
+
+    private function spiderSlide($from, $to): bool
+    {
+        // TODO
+        return true;
     }
 }

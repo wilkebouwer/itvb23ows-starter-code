@@ -83,6 +83,22 @@
         <link rel="stylesheet" type="text/css" href="./css/default.css">
     </head>
     <body>
+        <h1 class="gameStatus">
+            <?php
+                $whiteLost = $boardHandler->lostGame(0);
+                $blackLost = $boardHandler->lostGame(1);
+
+                if ($whiteLost && $blackLost) {
+                    echo "Draw!";
+                } else {
+                    if ($whiteLost) {
+                        echo "Black wins!";
+                    } elseif ($blackLost) {
+                        echo "White wins!";
+                    }
+                }
+            ?>
+        </h1>
         <div class="board">
             <?php
                 $min_p = INF;
