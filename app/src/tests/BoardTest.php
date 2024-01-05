@@ -181,4 +181,113 @@ class BoardTest extends TestCase
         $boardHandler->play('A', '2,0');
         $this->assertArrayHasKey('2,0', $stateHandler->getBoard());
     }
+
+    // Issue #7
+    public function testMoveSoldierOneTile() {
+        $backendHandler = new BackendHandlerTester();
+        $boardHandler = new BoardHandler($backendHandler);
+        $stateHandler = $backendHandler->getStateHandler();
+
+        $stateHandler->restart();
+
+        // White
+        $boardHandler->play('Q', '0,0');
+
+        // Black
+        $boardHandler->play('Q', '1,0');
+
+        // White
+        $boardHandler->play('S', '-1,0');
+
+        // Black
+        $boardHandler->play('B', '2,0');
+
+        // White
+        $boardHandler->move('-1,0', '0,-1');
+        $this->assertArrayNotHasKey('-1,0', $stateHandler->getBoard());
+        $this->assertArrayHasKey('0,-1', $stateHandler->getBoard());
+    }
+
+    // Issue #7
+    public function testMoveSoldierMultipleTiles() {
+        $backendHandler = new BackendHandlerTester();
+        $boardHandler = new BoardHandler($backendHandler);
+        $stateHandler = $backendHandler->getStateHandler();
+
+        $stateHandler->restart();
+
+        // White
+        $boardHandler->play('Q', '0,0');
+
+        // Black
+        $boardHandler->play('Q', '1,0');
+
+        // White
+        $boardHandler->play('S', '-1,0');
+
+        // Black
+        $boardHandler->play('S', '2,0');
+
+        // White
+        $boardHandler->move('-1,0', '1,1');
+        $this->assertArrayNotHasKey('-1,0', $stateHandler->getBoard());
+        $this->assertArrayHasKey('1,1', $stateHandler->getBoard());
+
+        // Black
+        $boardHandler->move('2,0', '-1,0');
+        $this->assertArrayNotHasKey('2,0', $stateHandler->getBoard());
+        $this->assertArrayHasKey('-1,0', $stateHandler->getBoard());
+    }
+
+    // Issue #7
+    public function testMoveSoldierInSurroundedTiles() {
+        $backendHandler = new BackendHandlerTester();
+        $boardHandler = new BoardHandler($backendHandler);
+        $stateHandler = $backendHandler->getStateHandler();
+
+        $stateHandler->restart();
+
+        // White
+        $boardHandler->play('Q', '0,0');
+
+        // Black
+        $boardHandler->play('Q', '1,0');
+
+        // White
+        $boardHandler->play('B', '-1,0');
+
+        // Black
+        $boardHandler->play('B', '2,-1');
+
+        // White
+        $boardHandler->play('B', '0,-1');
+
+        // Black
+        $boardHandler->play('B', '3,-2');
+
+        // White
+        $boardHandler->play('A', '1,-2');
+
+        // Black
+        $boardHandler->play('A', '2,0');
+
+        // White
+        $boardHandler->move('1,-2', '2,-2');
+
+        // Black
+        $boardHandler->play('S', '3,-1');
+
+        // White
+        $boardHandler->play('A', '1,-2');
+
+        // Black (Fails with 'Tile must slide') error
+        $boardHandler->move('3,-1', '1,-1');
+        $this->assertArrayNotHasKey('1,-1', $stateHandler->getBoard());
+        $this->assertArrayHasKey('3,-1', $stateHandler->getBoard());
+
+        // Black
+        $boardHandler->move('3,-1', '-1,-1');
+        $this->assertArrayNotHasKey('3,-1', $stateHandler->getBoard());
+        $this->assertArrayHasKey('-1,-1', $stateHandler->getBoard());
+    }
 }

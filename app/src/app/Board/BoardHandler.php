@@ -121,7 +121,7 @@ class BoardHandler
         } elseif ($hand['Q']) {
             $this->stateHandler->setError("Queen bee is not played");
         } elseif (!$this->hasNeighbour($to)) {
-                $this->stateHandler->setError("Move would split hive");
+            $this->stateHandler->setError("Move would split hive");
         } else {
             // Tile variable can only set if $board[$from] is set
             $tile = array_pop($board[$from]);
@@ -134,6 +134,11 @@ class BoardHandler
             } elseif (
                 ($tile[1] == "Q" || $tile[1] == "B") &&
                 !$this->slide($from, $to)
+            ) {
+                $this->stateHandler->setError("Tile must slide");
+           } elseif (
+                $tile[1] == "S" &&
+                !$this->soldierSlide($from, $to)
             ) {
                 $this->stateHandler->setError("Tile must slide");
             } else {
@@ -188,8 +193,12 @@ class BoardHandler
 
     private function hasNeighbour($a): bool
     {
-        foreach (array_keys($this->stateHandler->getBoard()) as $b) {
-            if ($this->isNeighbour($a, $b)) {
+        $b = explode(',', $a);
+
+        foreach ($this->offsets as $pq) {
+            $p = $b[0] + $pq[0];
+            $q = $b[1] + $pq[1];
+            if ($this->isNeighbour($a, $p.",".$q)) {
                 return true;
             }
         }
@@ -226,10 +235,11 @@ class BoardHandler
         }
 
         $board = $this->stateHandler->getBoard();
+
         $b = explode(',', $to);
-        $common = [];
 
         // Make array of all neighbouring positions shared by $from and $to position
+        $common = [];
         foreach ($this->offsets as $pq) {
             $p = $b[0] + $pq[0];
             $q = $b[1] + $pq[1];
@@ -240,10 +250,10 @@ class BoardHandler
 
         // Return false if positions are invalid
         if (
-            !isset($board[$common[0]]) && !$board[$common[0]] &&
-            !isset($board[$common[1]]) && !$board[$common[1]] &&
-            !isset($board[$from]) && !$board[$from] &&
-            !isset($board[$to]) && !$board[$to]
+            (!isset($board[$common[0]]) || !$board[$common[0]]) &&
+            (!isset($board[$common[1]]) || !$board[$common[1]]) &&
+            (!isset($board[$from]) || !$board[$from]) &&
+            (!isset($board[$to]) || !$board[$to])
         ) {
             return false;
         }
@@ -263,5 +273,46 @@ class BoardHandler
         // TODO: Has something to do with multiple tiles on one spot?
         return min($firstCommonLen, $secondCommonLen)
             <= max($fromLen, $toLen);
+    }
+
+    public function soldierSlide($from, $to): bool
+    {
+        $board = $this->stateHandler->getBoard();
+
+        $visited = array($from);
+        $adj = [];
+
+        // TODO: count() works for now, but could be better. Gets in infinite loop without it
+        while (end($visited) != null && count($visited) < 160) {
+            $b = explode(',', end($visited));
+
+            // Put all adjacent legal board positions relative to last $visited entry in $adj array
+            foreach ($this->offsets as $pq) {
+                $p = $b[0] + $pq[0];
+                $q = $b[1] + $pq[1];
+
+                $position = $p . "," . $q;
+
+                if (!in_array($position, $visited)) {
+                    if (
+                        $this->hasNeighbour($position) &&
+                        !isset($board[$position])
+                    ) {
+                        if ($position == $to) {
+                            return true;
+                        }
+                        $adj[] = $position;
+                    }
+                }
+            }
+
+            // Place first $adj entry at the end of $visited if not already visited
+            $neighbour = array_shift($adj);
+            if (!in_array($neighbour, $visited)) {
+                $visited[] = $neighbour;
+            }
+        }
+
+        return false;
     }
 }

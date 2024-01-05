@@ -64,8 +64,8 @@
     $to = $boardHandler->getPossiblePositions();
 
     // TODO: Debug
-    //print("Board");
-    //print("<pre>".print_r($board,true)."</pre>");
+    print("Board");
+    print("<pre>".print_r($board,true)."</pre>");
 
     // Used later to print White and Black's hand
     function printHand($hand, $player) {
