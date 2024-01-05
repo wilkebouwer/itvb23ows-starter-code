@@ -24,7 +24,7 @@
 
     // Handle 'Pass' button press
     if(array_key_exists('pass', $_POST)) {
-        $backendHandler->addMove(null, null);
+        $boardHandler->pass();
         header($indexLocationHeader);
     }
 

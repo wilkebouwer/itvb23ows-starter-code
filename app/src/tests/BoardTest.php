@@ -182,6 +182,7 @@ class BoardTest extends TestCase
         $this->assertArrayHasKey('2,0', $stateHandler->getBoard());
     }
 
+    // Issue #10
     public function testWhiteWin() {
         $backendHandler = new BackendHandlerTester();
         $boardHandler = new BoardHandler($backendHandler);
@@ -235,6 +236,7 @@ class BoardTest extends TestCase
         $this->assertTrue($boardHandler->lostGame(1));
     }
 
+    // Issue #10
     public function testBlackWin() {
         $backendHandler = new BackendHandlerTester();
         $boardHandler = new BoardHandler($backendHandler);
@@ -293,6 +295,7 @@ class BoardTest extends TestCase
         $this->assertFalse($boardHandler->lostGame(1));
     }
 
+    // Issue #10
     public function testDraw() {
         $backendHandler = new BackendHandlerTester();
         $boardHandler = new BoardHandler($backendHandler);
@@ -379,6 +382,95 @@ class BoardTest extends TestCase
         $boardHandler->move('3,0', '0,1');
         $this->assertTrue($boardHandler->lostGame(0));
         $this->assertTrue($boardHandler->lostGame(1));
+    }
+
+    // Issue #9
+    public function testPass() {
+        $backendHandler = new BackendHandlerTester();
+        $boardHandler = new BoardHandler($backendHandler);
+        $stateHandler = $backendHandler->getStateHandler();
+
+        $stateHandler->restart();
+
+        // White
+        $boardHandler->play('Q', '0,0');
+
+        // Black
+        $boardHandler->play('Q', '1,0');
+
+        // White
+        $boardHandler->play('B', '-1,0');
+
+        // Black
+        $boardHandler->play('A', '2,0');
+
+        // White
+        $boardHandler->play('B', '-2,0');
+
+        // Black
+        $boardHandler->play('A', '3,0');
+
+        // White
+        $boardHandler->play('G', '-3,0');
+
+        // Black
+        $boardHandler->play('A', '4,0');
+
+        // White
+        $boardHandler->play('G', '-4,0');
+
+        // Black
+        $boardHandler->play('S', '5,0');
+
+        // White
+        $boardHandler->play('G', '-5,0');
+
+        // Black
+        $boardHandler->play('S', '6,0');
+
+        // White
+        $boardHandler->play('S', '-6,0');
+
+        // Black
+        $boardHandler->play('G', '7,0');
+
+        // White
+        $boardHandler->play('S', '-7,0');
+
+        // Black
+        $boardHandler->play('G', '8,0');
+
+        // White
+        $boardHandler->play('A', '-8,0');
+
+        // Black
+        $boardHandler->play('G', '9,0');
+
+        // White
+        $boardHandler->play('A', '-9,0');
+
+        // Black
+        $boardHandler->play('B', '10,0');
+
+        // White
+        $boardHandler->play('A', '-10,0');
+
+        // Black
+        $boardHandler->play('B', '11,0');
+
+        // White (Fails with 'Play or move is still possible' error)
+        $boardHandler->pass();
+
+        // White
+        $boardHandler->move('-10,0', '12,0');
+
+        // Black
+        $boardHandler->pass();
+
+        // White (Can make move because of black's successful pass)
+        $boardHandler->move('-9,0', '13,0');
+        $this->assertArrayNotHasKey('-9,0', $stateHandler->getBoard());
+        $this->assertArrayHasKey('13,0', $stateHandler->getBoard());
     }
 
     // Issue #7
