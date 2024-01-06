@@ -214,23 +214,10 @@ class BoardHandler
             } elseif (isset($board[$to]) && $tile[1] != "B") {
                 $this->stateHandler->setError("Tile not empty");
             } elseif (
-                ($tile[1] == "Q" || $tile[1] == "B") &&
-                !$this->slide($from, $to)
-            ) {
-                $this->stateHandler->setError("Tile must slide");
-            } elseif (
-                $tile[1] == "A" &&
-                !$this->antSlide($from, $to)
-            ) {
-                $this->stateHandler->setError("Tile must slide");
-            } elseif (
-                $tile[1] == "S" &&
-                !$this->spiderSlide($from, $to)
-            ) {
-                $this->stateHandler->setError("Tile must slide");
-            } elseif (
-                $tile[1] == "G" &&
-                !$this->grasshopperSlide($from, $to)
+                (($tile[1] == "Q" || $tile[1] == "B") && !$this->slide($from, $to)) ||
+                ($tile[1] == "A" && !$this->antSlide($from, $to)) ||
+                ($tile[1] == "S" && !$this->spiderSlide($from, $to)) ||
+                ($tile[1] == "G" && !$this->grasshopperSlide($from, $to))
             ) {
                 $this->stateHandler->setError("Tile must slide");
             } else {
@@ -307,7 +294,6 @@ class BoardHandler
         $neighbours = [];
         $b = explode(',', $a);
 
-        $common = [];
         foreach ($this->offsets as $pq) {
             $p = $b[0] + $pq[0];
             $q = $b[1] + $pq[1];
@@ -390,7 +376,6 @@ class BoardHandler
         $toLen = $board[$to] ?? 0;
         $toLen = $this->len($toLen);
 
-        // TODO: Has something to do with multiple tiles on one spot?
         return min($firstCommonLen, $secondCommonLen)
             <= max($fromLen, $toLen);
     }
@@ -405,7 +390,7 @@ class BoardHandler
         $tiles = array($from);
 
         // Find if path exists between $from and $to using DFS
-        while (count($tiles) > 0) {
+        while (!empty($tiles)) {
             $currentTile = array_shift($tiles);
 
             if (!in_array($currentTile, $visited)) {
@@ -421,16 +406,15 @@ class BoardHandler
 
                 $position = $p . "," . $q;
 
-                if (!in_array($position, $visited)) {
-                    if (
-                        !isset($board[$position]) &&
-                        $this->hasNeighbour($board, $position)
-                    ) {
-                        if ($position == $to) {
-                            return true;
-                        }
-                        $tiles[] = $position;
+                if (
+                    !in_array($position, $visited) &&
+                    !isset($board[$position]) &&
+                    $this->hasNeighbour($board, $position)
+                ) {
+                    if ($position == $to) {
+                        return true;
                     }
+                    $tiles[] = $position;
                 }
             }
         }
@@ -453,7 +437,7 @@ class BoardHandler
 
         // Find if path exists between $from and $to using DFS with move limit
         while (
-            count($tiles) > 0 &&
+            !empty($tiles) &&
             $depth < 3
         ) {
             $currentTile = array_shift($tiles);
@@ -482,20 +466,19 @@ class BoardHandler
 
                 $position = $p . "," . $q;
 
-                if (!in_array($position, $visited)) {
+                if (
+                    !in_array($position, $visited) &&
+                    $position != $prevTile &&           // Don't move back to previous position
+                    !isset($board[$position]) &&
+                    $this->hasNeighbour($board, $position)
+                ) {
                     if (
-                        $position != $prevTile && // Don't move back to previous position
-                        !isset($board[$position]) &&
-                        $this->hasNeighbour($board, $position)
+                        $position == $to &&
+                        $depth == 2
                     ) {
-                        if (
-                            $position == $to &&
-                            $depth == 2
-                        ) {
-                            return true;
-                        }
-                        $tiles[] = $position;
+                        return true;
                     }
+                    $tiles[] = $position;
                 }
             }
 
