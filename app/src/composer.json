@@ -7,7 +7,8 @@
       "Backend\\": "./app/Backend",
       "Board\\": "./app/Board",
       "Database\\": "./app/Database",
-      "State\\": "./app/State"
+      "State\\": "./app/State",
+      "Mocks\\": "./tests/Mocks"
     }
   }
 }

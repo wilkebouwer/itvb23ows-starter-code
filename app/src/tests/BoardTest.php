@@ -1,30 +1,14 @@
 <?php
 
+use Mocks\BackendHandlerMock;
 use PHPUnit\Framework\TestCase;
-
-use Backend\BackendHandler as BackendHandler;
 use Board\BoardHandler as BoardHandler;
-use State\StateHandler as StateHandler;
-
-class BackendHandlerTester extends BackendHandler {
-
-    public function __construct()
-    {
-        $this->stateHandler = new StateHandler();
-    }
-
-    public function addMove($from, $to)
-    {
-        // Change to different player
-        $this->stateHandler->switchPlayer();
-    }
-}
 
 class BoardTest extends TestCase
 {
     // Issue #1
     public function testOnlyGetAvailablePiecesForPlayer() {
-        $backendHandler = new BackendHandlerTester();
+        $backendHandler = new BackendHandlerMock();
         $boardHandler = new BoardHandler($backendHandler);
         $stateHandler = $backendHandler->getStateHandler();
 
@@ -48,7 +32,7 @@ class BoardTest extends TestCase
 
     // Issue #1
     public function testOnlyGetAvailableMovePositionsForPlayer() {
-        $backendHandler = new BackendHandlerTester();
+        $backendHandler = new BackendHandlerMock();
         $boardHandler = new BoardHandler($backendHandler);
         $stateHandler = $backendHandler->getStateHandler();
 
@@ -79,7 +63,7 @@ class BoardTest extends TestCase
 
     // Issue #2
     public function testMoveToUninitializedPosition() {
-        $backendHandler = new BackendHandlerTester();
+        $backendHandler = new BackendHandlerMock();
         $boardHandler = new BoardHandler($backendHandler);
         $stateHandler = $backendHandler->getStateHandler();
 
@@ -98,7 +82,7 @@ class BoardTest extends TestCase
 
     // Issue #3
     public function testPlayAfterMustPlaceQueenError() {
-        $backendHandler = new BackendHandlerTester();
+        $backendHandler = new BackendHandlerMock();
         $boardHandler = new BoardHandler($backendHandler);
         $stateHandler = $backendHandler->getStateHandler();
 
@@ -145,7 +129,7 @@ class BoardTest extends TestCase
 
     // Issue #4
     public function testPlaceTileOnPreviousMovePosition() {
-        $backendHandler = new BackendHandlerTester();
+        $backendHandler = new BackendHandlerMock();
         $boardHandler = new BoardHandler($backendHandler);
         $stateHandler = $backendHandler->getStateHandler();
 
@@ -184,7 +168,7 @@ class BoardTest extends TestCase
 
     // Issue #10
     public function testWhiteWin() {
-        $backendHandler = new BackendHandlerTester();
+        $backendHandler = new BackendHandlerMock();
         $boardHandler = new BoardHandler($backendHandler);
         $stateHandler = $backendHandler->getStateHandler();
 
@@ -238,7 +222,7 @@ class BoardTest extends TestCase
 
     // Issue #10
     public function testBlackWin() {
-        $backendHandler = new BackendHandlerTester();
+        $backendHandler = new BackendHandlerMock();
         $boardHandler = new BoardHandler($backendHandler);
         $stateHandler = $backendHandler->getStateHandler();
 
@@ -297,7 +281,7 @@ class BoardTest extends TestCase
 
     // Issue #10
     public function testDraw() {
-        $backendHandler = new BackendHandlerTester();
+        $backendHandler = new BackendHandlerMock();
         $boardHandler = new BoardHandler($backendHandler);
         $stateHandler = $backendHandler->getStateHandler();
 
@@ -386,7 +370,7 @@ class BoardTest extends TestCase
 
     // Issue #9
     public function testPass() {
-        $backendHandler = new BackendHandlerTester();
+        $backendHandler = new BackendHandlerMock();
         $boardHandler = new BoardHandler($backendHandler);
         $stateHandler = $backendHandler->getStateHandler();
 
@@ -471,114 +455,5 @@ class BoardTest extends TestCase
         $boardHandler->move('-9,0', '13,0');
         $this->assertArrayNotHasKey('-9,0', $stateHandler->getBoard());
         $this->assertArrayHasKey('13,0', $stateHandler->getBoard());
-    }
-
-    // Issue #7
-    public function testMoveSoldierOneTile() {
-        $backendHandler = new BackendHandlerTester();
-        $boardHandler = new BoardHandler($backendHandler);
-        $stateHandler = $backendHandler->getStateHandler();
-
-        $stateHandler->restart();
-
-        // White
-        $boardHandler->play('Q', '0,0');
-
-        // Black
-        $boardHandler->play('Q', '1,0');
-
-        // White
-        $boardHandler->play('A', '-1,0');
-
-        // Black
-        $boardHandler->play('B', '2,0');
-
-        // White
-        $boardHandler->move('-1,0', '0,-1');
-        $this->assertArrayNotHasKey('-1,0', $stateHandler->getBoard());
-        $this->assertArrayHasKey('0,-1', $stateHandler->getBoard());
-    }
-
-    // Issue #7
-    public function testMoveSoldierMultipleTiles() {
-        $backendHandler = new BackendHandlerTester();
-        $boardHandler = new BoardHandler($backendHandler);
-        $stateHandler = $backendHandler->getStateHandler();
-
-        $stateHandler->restart();
-
-        // White
-        $boardHandler->play('Q', '0,0');
-
-        // Black
-        $boardHandler->play('Q', '1,0');
-
-        // White
-        $boardHandler->play('A', '-1,0');
-
-        // Black
-        $boardHandler->play('A', '2,0');
-
-        // White
-        $boardHandler->move('-1,0', '1,1');
-        $this->assertArrayNotHasKey('-1,0', $stateHandler->getBoard());
-        $this->assertArrayHasKey('1,1', $stateHandler->getBoard());
-
-        // Black
-        $boardHandler->move('2,0', '-1,0');
-        $this->assertArrayNotHasKey('2,0', $stateHandler->getBoard());
-        $this->assertArrayHasKey('-1,0', $stateHandler->getBoard());
-    }
-
-    // Issue #7
-    public function testMoveSoldierInSurroundedTiles() {
-        $backendHandler = new BackendHandlerTester();
-        $boardHandler = new BoardHandler($backendHandler);
-        $stateHandler = $backendHandler->getStateHandler();
-
-        $stateHandler->restart();
-
-        // White
-        $boardHandler->play('Q', '0,0');
-
-        // Black
-        $boardHandler->play('Q', '1,0');
-
-        // White
-        $boardHandler->play('B', '-1,0');
-
-        // Black
-        $boardHandler->play('B', '2,-1');
-
-        // White
-        $boardHandler->play('A', '0,-1');
-
-        // Black
-        $boardHandler->play('B', '3,-2');
-
-        // White
-        $boardHandler->play('B', '1,-2');
-
-        // Black
-        $boardHandler->play('S', '2,0');
-
-        // White
-        $boardHandler->move('1,-2', '2,-2');
-
-        // Black
-        $boardHandler->play('A', '3,-1');
-
-        // White
-        $boardHandler->play('S', '1,-2');
-
-        // Black (Fails with 'Tile must slide') error
-        $boardHandler->move('3,-1', '1,-1');
-        $this->assertArrayNotHasKey('1,-1', $stateHandler->getBoard());
-        $this->assertArrayHasKey('3,-1', $stateHandler->getBoard());
-
-        // Black
-        $boardHandler->move('3,-1', '-1,-1');
-        $this->assertArrayNotHasKey('3,-1', $stateHandler->getBoard());
-        $this->assertArrayHasKey('-1,-1', $stateHandler->getBoard());
     }
 }

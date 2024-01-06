@@ -202,7 +202,7 @@ class BoardHandler
         } elseif ($hand['Q']) {
             $this->stateHandler->setError("Queen bee is not played");
         } else {
-            // Remove tile from board array
+            // Remove $from tile from board array
             $tile = array_pop($board[$from]);
             unset($board[$from]);
 
@@ -393,6 +393,8 @@ class BoardHandler
     private function antSlide($from, $to): bool
     {
         $board = $this->stateHandler->getBoard();
+        // Remove $from tile from board array
+        unset($board[$from]);
 
         $visited = [];
         $tiles = array($from);
@@ -416,8 +418,8 @@ class BoardHandler
 
                 if (!in_array($position, $visited)) {
                     if (
-                        $this->hasNeighbour($board, $position) &&
-                        !isset($board[$position])
+                        !isset($board[$position]) &&
+                        $this->hasNeighbour($board, $position)
                     ) {
                         if ($position == $to) {
                             return true;
@@ -433,7 +435,68 @@ class BoardHandler
 
     private function spiderSlide($from, $to): bool
     {
-        // TODO
-        return true;
+        $board = $this->stateHandler->getBoard();
+        // Remove $from tile from board array
+        unset($board[$from]);
+
+        $visited = [];
+        $tiles = array($from);
+        $tiles[] = null;
+
+        $prevTile = null;
+        $depth = 0;
+
+        // Find if path exists between $from and $to using DFS with move limit
+        while (
+            count($tiles) > 0 &&
+            $depth < 3
+        ) {
+            $currentTile = array_shift($tiles);
+
+            // Null is added to $tiles array to indicate increase in depth
+            if ($currentTile == null) {
+                $depth++;
+                $tiles[] = null;
+                if (reset($tiles) == null) { // Double null = all nodes have been visited
+                    break;
+                } else {
+                    continue;
+                }
+            }
+
+            if (!in_array($currentTile, $visited)) {
+                $visited[] = $currentTile;
+            }
+
+            $b = explode(',', $currentTile);
+
+            // Put all adjacent legal board positions relative to current tile in $tiles array
+            foreach ($this->offsets as $pq) {
+                $p = $b[0] + $pq[0];
+                $q = $b[1] + $pq[1];
+
+                $position = $p . "," . $q;
+
+                if (!in_array($position, $visited)) {
+                    if (
+                        $position != $prevTile && // Don't move back to previous position
+                        !isset($board[$position]) &&
+                        $this->hasNeighbour($board, $position)
+                    ) {
+                        if (
+                            $position == $to &&
+                            $depth == 2
+                        ) {
+                            return true;
+                        }
+                        $tiles[] = $position;
+                    }
+                }
+            }
+
+            $prevTile = $currentTile;
+        }
+
+        return false;
     }
 }

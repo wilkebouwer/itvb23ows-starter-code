@@ -20,6 +20,10 @@ class ComposerStaticInitd751713988987e9331980363e24189ce
         array (
             'PhpParser\\' => 10,
         ),
+        'M' => 
+        array (
+            'Mocks\\' => 6,
+        ),
         'D' => 
         array (
             'Doctrine\\Instantiator\\' => 22,
@@ -41,6 +45,10 @@ class ComposerStaticInitd751713988987e9331980363e24189ce
         'PhpParser\\' => 
         array (
             0 => __DIR__ . '/..' . '/nikic/php-parser/lib/PhpParser',
+        ),
+        'Mocks\\' => 
+        array (
+            0 => __DIR__ . '/../..' . '/tests/Mocks',
         ),
         'Doctrine\\Instantiator\\' => 
         array (
