@@ -1,6 +1,6 @@
 <?php
 
-namespace Mocks;
+namespace Mock;
 
 use Backend\BackendHandler;
 use State\StateHandler;

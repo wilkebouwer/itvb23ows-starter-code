@@ -1,6 +1,6 @@
 <?php
 
-use Mocks\BackendHandlerMock;
+use Mock\BackendHandlerMock;
 use PHPUnit\Framework\TestCase;
 use Board\BoardHandler as BoardHandler;
 

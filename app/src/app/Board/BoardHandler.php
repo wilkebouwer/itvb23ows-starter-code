@@ -228,6 +228,11 @@ class BoardHandler
                 !$this->spiderSlide($from, $to)
             ) {
                 $this->stateHandler->setError("Tile must slide");
+            } elseif (
+                $tile[1] == "G" &&
+                !$this->grasshopperSlide($from, $to)
+            ) {
+                $this->stateHandler->setError("Tile must slide");
             } else {
                 return true;
             }
@@ -497,6 +502,64 @@ class BoardHandler
             $prevTile = $currentTile;
         }
 
+        return false;
+    }
+
+    private function grasshopperSlide($from, $to): bool
+    {
+        $board = $this->stateHandler->getBoard();
+
+        $fromExploded = explode(',', $from);
+        $toExploded = explode(',', $to);
+
+        // Get direction to move in to reach $to
+        if ($fromExploded[1] == $toExploded[1]) {           // -- On same horizontal axis --
+            if ($fromExploded[0] > $toExploded[0]) {        // R -> L
+                $offset = [-1, 0];
+            } else {                                        // L -> R
+                $offset = [1, 0];
+            }
+        } elseif ($fromExploded[0] == $toExploded[0]) {     // -- On same TL - BR diagonal axis --
+            if ($fromExploded[1] > $toExploded[1]) {        // BR -> TL
+                $offset = [0, -1];
+            } else {                                        // TL -> BR
+                $offset = [0, 1];
+            }
+        } elseif (                                          // -- On same TR - BL diagonal axis --
+            $fromExploded[1] == $toExploded[1] -
+            ($fromExploded[0] - $toExploded[0])
+        ) {
+            if ($fromExploded[0] > $toExploded[0]) {        // TR -> BL
+                $offset = [-1, 1];
+            } else {                                        // BL -> TR
+                $offset = [1, -1];
+            }
+        } else {
+            return false;
+        }
+
+        $p = $fromExploded[0] + $offset[0];
+        $q = $fromExploded[1] + $offset[1];
+
+        $position = $p . "," . $q;
+        $positionExploded = [$p, $q];
+
+        // Don't allow moving to empty neighbour
+        if (!isset($board[$position])) {
+            return false;
+        }
+
+        while (isset($board[$position])) {
+            $p = $positionExploded[0] + $offset[0];
+            $q = $positionExploded[1] + $offset[1];
+
+            $position = $p . "," . $q;
+            $positionExploded = [$p, $q];
+        }
+
+        if ($position == $to) {
+            return true;
+        }
         return false;
     }
 }
