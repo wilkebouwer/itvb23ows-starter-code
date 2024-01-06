@@ -6,7 +6,7 @@ ARG DOCKER_GID
 # Install docker-compose and add jenkins user to docker group
 USER root
 RUN groupadd --gid ${DOCKER_GID} docker
-RUN apt-get update && apt-get install -y docker-compose && rm -rf /var/lib/apt/lists/*
+RUN apt-get update && apt-get install -y docker-compose=1.29.2-3 && rm -rf /var/lib/apt/lists/*
 RUN usermod -aG docker jenkins
 USER jenkins
 
