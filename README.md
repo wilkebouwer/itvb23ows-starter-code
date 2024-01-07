@@ -34,9 +34,9 @@ To only the production containers, execute the following commands:
 
 If you want you can change environment variables in `.env`. Don't worry about the JENKINS.* and DOCKER_GID variables if you're planning to only run the production configuration. They can be kept unchanged.
 
-`docker-compose build app database`
+`docker-compose build app database ai`
 
-`docker-compose up app database`
+`docker-compose up app`
 
 The app should now be accessible from `http://localhost:APP_PORT/`
 
