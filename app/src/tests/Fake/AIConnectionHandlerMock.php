@@ -6,17 +6,17 @@ use AIConnection\AIConnectionHandler;
 
 class AIConnectionHandlerMock extends AIConnectionHandler
 {
-    private $result;
+    private $results;
 
-    // Set result that will be received when calling getAIMoveArray
-    public function __construct($result)
+    // Set results that will be received when calling getResults
+    public function __construct($results)
     {
-        $this->result = $result;
+        $this->results = $results;
     }
 
     // Replace server call with a predefined result
-    public function getAIMoveArray($moveNumber, $hand, $board)
+    public function getResults($moveNumber, $hand, $board)
     {
-        return $this->result;
+        return $this->results;
     }
 }

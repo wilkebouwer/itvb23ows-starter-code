@@ -136,11 +136,13 @@ class BoardHandler
 
         $moves = $this->backendHandler->getMoves();
 
+        // Get count of the moves made this game
         while ($moves->fetch_array()) {
             $moveNumber++;
         }
 
-        $resultArray = $this->aiConnectionHandler->getAIMoveArray(
+        // Get response from AI server
+        $resultArray = $this->aiConnectionHandler->getResults(
             $moveNumber,
             $this->stateHandler->getHand(),
             $this->stateHandler->getBoard()
@@ -568,11 +570,12 @@ class BoardHandler
         $position = $p . "," . $q;
         $positionExploded = [$p, $q];
 
-        // Don't allow moving to empty neighbour
+        // Don't allow moving to empty neighbours
         if (!isset($board[$position])) {
             return false;
         }
 
+        // Set $position to first empty position found when following offset
         while (isset($board[$position])) {
             $p = $positionExploded[0] + $offset[0];
             $q = $positionExploded[1] + $offset[1];

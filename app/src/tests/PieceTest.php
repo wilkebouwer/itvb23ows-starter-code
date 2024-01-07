@@ -21,7 +21,8 @@ class PieceTest extends TestCase
     }
 
     // Issue #7
-    public function testMoveAntOneTile() {
+    public function testMove_MoveAntOneTile_MoveInState()
+    {
         // White
         $this->boardHandler->play('Q', '0,0');
 
@@ -36,12 +37,13 @@ class PieceTest extends TestCase
 
         // White
         $this->boardHandler->move('-1,0', '0,-1');
+
         $this->assertArrayNotHasKey('-1,0', $this->stateHandler->getBoard());
-        $this->assertArrayHasKey('0,-1', $this->stateHandler->getBoard());
     }
 
     // Issue #7
-    public function testMoveAntMultipleTiles() {
+    public function testMove_MoveAntMultipleTiles_MoveInState()
+    {
         // White
         $this->boardHandler->play('Q', '0,0');
 
@@ -56,17 +58,13 @@ class PieceTest extends TestCase
 
         // White
         $this->boardHandler->move('-1,0', '1,1');
-        $this->assertArrayNotHasKey('-1,0', $this->stateHandler->getBoard());
-        $this->assertArrayHasKey('1,1', $this->stateHandler->getBoard());
 
-        // Black
-        $this->boardHandler->move('2,0', '-1,0');
-        $this->assertArrayNotHasKey('2,0', $this->stateHandler->getBoard());
-        $this->assertArrayHasKey('-1,0', $this->stateHandler->getBoard());
+        $this->assertArrayHasKey('1,1', $this->stateHandler->getBoard());
     }
 
     // Issue #7
-    public function testMoveAntInSurroundedTiles() {
+    public function testMove_MoveAntInSurroundedTiles_MoveNotInState()
+    {
         // White
         $this->boardHandler->play('Q', '0,0');
 
@@ -102,17 +100,13 @@ class PieceTest extends TestCase
 
         // Black (Fails with 'Tile must slide') error
         $this->boardHandler->move('3,-1', '1,-1');
-        $this->assertArrayNotHasKey('1,-1', $this->stateHandler->getBoard());
-        $this->assertArrayHasKey('3,-1', $this->stateHandler->getBoard());
 
-        // Black
-        $this->boardHandler->move('3,-1', '-1,-1');
-        $this->assertArrayNotHasKey('3,-1', $this->stateHandler->getBoard());
-        $this->assertArrayHasKey('-1,-1', $this->stateHandler->getBoard());
+        $this->assertArrayNotHasKey('1,-1', $this->stateHandler->getBoard());
     }
 
     // Issue #8
-    public function testMoveSpiderInStraightLine() {
+    public function testMove_MoveSpiderOneTileInStraightLine_MoveNotInState()
+    {
         // White
         $this->boardHandler->play('Q', '0,0');
 
@@ -131,82 +125,179 @@ class PieceTest extends TestCase
         // Black
         $this->boardHandler->play('B', '3,0');
 
-        // White (Move 1 tile, fails with 'Tile must slide' error)
+        // White (Move 1 tiles)
         $this->boardHandler->move('-1,-1', '0,-1');
+
         $this->assertArrayNotHasKey('0,-1', $this->stateHandler->getBoard());
-        $this->assertArrayHasKey('-1,-1', $this->stateHandler->getBoard());
+    }
 
-        // White (Move 2 tiles, fails with 'Tile must slide' error)
+    // Issue #8
+    public function testMove_MoveSpiderTwoTilesInStraightLine_MoveNotInState()
+    {
+        // White
+        $this->boardHandler->play('Q', '0,0');
+
+        // Black
+        $this->boardHandler->play('Q', '1,0');
+
+        // White
+        $this->boardHandler->play('B', '-1,0');
+
+        // Black
+        $this->boardHandler->play('B', '2,0');
+
+        // White
+        $this->boardHandler->play('S', '-1,-1');
+
+        // Black
+        $this->boardHandler->play('B', '3,0');
+
+        // White (Move 2 tiles)
         $this->boardHandler->move('-1,-1', '1,-1');
+
         $this->assertArrayNotHasKey('1,-1', $this->stateHandler->getBoard());
-        $this->assertArrayHasKey('-1,-1', $this->stateHandler->getBoard());
+    }
 
-        // White (Move 4 tiles, fails with 'Tile must slide' error)
-        $this->boardHandler->move('-1,-1', '3,-1');
-        $this->assertArrayNotHasKey('3,-1', $this->stateHandler->getBoard());
-        $this->assertArrayHasKey('-1,-1', $this->stateHandler->getBoard());
+    // Issue #8
+    public function testMove_MoveSpiderThreeTilesInStraightLine_MoveInState()
+    {
+        // White
+        $this->boardHandler->play('Q', '0,0');
 
-        // White (Move 5 tiles, fails with 'Tile must slide' error)
-        $this->boardHandler->move('-1,-1', '4,-1');
-        $this->assertArrayNotHasKey('4,-1', $this->stateHandler->getBoard());
-        $this->assertArrayHasKey('-1,-1', $this->stateHandler->getBoard());
+        // Black
+        $this->boardHandler->play('Q', '1,0');
 
-        // White (Move 6 tiles, fails with 'Tile must slide' error)
-        $this->boardHandler->move('-1,-1', '5,-1');
-        $this->assertArrayNotHasKey('5,-1', $this->stateHandler->getBoard());
-        $this->assertArrayHasKey('-1,-1', $this->stateHandler->getBoard());
+        // White
+        $this->boardHandler->play('B', '-1,0');
+
+        // Black
+        $this->boardHandler->play('B', '2,0');
+
+        // White
+        $this->boardHandler->play('S', '-1,-1');
+
+        // Black
+        $this->boardHandler->play('B', '3,0');
 
         // White (Move 3 tiles)
         $this->boardHandler->move('-1,-1', '2,-1');
-        $this->assertArrayNotHasKey('-1,-1', $this->stateHandler->getBoard());
+
         $this->assertArrayHasKey('2,-1', $this->stateHandler->getBoard());
     }
 
     // Issue #8
-    public function testMoveSpiderAroundCorner() {
+    public function testMove_MoveSpiderFourTilesInStraightLine_MoveNotInState()
+    {
         // White
         $this->boardHandler->play('Q', '0,0');
 
+        // Black
+        $this->boardHandler->play('Q', '1,0');
+
+        // White
+        $this->boardHandler->play('B', '-1,0');
+
+        // Black
+        $this->boardHandler->play('B', '2,0');
+
+        // White
+        $this->boardHandler->play('S', '-1,-1');
+
+        // Black
+        $this->boardHandler->play('B', '3,0');
+
+        // White (Move 1 tiles)
+        $this->boardHandler->move('-1,-1', '3,-1');
+
+        $this->assertArrayNotHasKey('3,-1', $this->stateHandler->getBoard());
+    }
+
+    // Issue #8
+    public function testMove_MoveSpiderOneTileAroundCorner_MoveNotInState()
+    {
+        // White
+        $this->boardHandler->play('Q', '0,0');
+
+        // Black
         $this->boardHandler->play('Q', '1,0');
 
         // White
         $this->boardHandler->play('S', '-1,0');
 
+        // Black
         $this->boardHandler->play('B', '2,0');
 
         // White (Move 1 tile, fails with 'Tile must slide' error)
         $this->boardHandler->move('-1,0', '0,-1');
+
         $this->assertArrayNotHasKey('0,-1', $this->stateHandler->getBoard());
-        $this->assertArrayHasKey('-1,0', $this->stateHandler->getBoard());
+    }
+
+    // Issue #8
+    public function testMove_MoveSpiderTwoTilesAroundCorner_MoveNotInState()
+    {
+        // White
+        $this->boardHandler->play('Q', '0,0');
+
+        // Black
+        $this->boardHandler->play('Q', '1,0');
+
+        // White
+        $this->boardHandler->play('S', '-1,0');
+
+        // Black
+        $this->boardHandler->play('B', '2,0');
 
         // White (Move 2 tiles, fails with 'Tile must slide' error)
         $this->boardHandler->move('-1,0', '1,-1');
+
         $this->assertArrayNotHasKey('1,-1', $this->stateHandler->getBoard());
-        $this->assertArrayHasKey('-1,0', $this->stateHandler->getBoard());
+    }
 
-        // White (Move 4 tiles, fails with 'Tile must slide' error)
-        $this->boardHandler->move('-1,0', '3,-1');
-        $this->assertArrayNotHasKey('3,-1', $this->stateHandler->getBoard());
-        $this->assertArrayHasKey('-1,0', $this->stateHandler->getBoard());
+    // Issue #8
+    public function testMove_MoveSpiderThreeTilesAroundCorner_MoveInState()
+    {
+        // White
+        $this->boardHandler->play('Q', '0,0');
 
-        // White (Move 5 tiles, fails with 'Tile must slide' error)
-        $this->boardHandler->move('-1,0', '4,-1');
-        $this->assertArrayNotHasKey('4,-1', $this->stateHandler->getBoard());
-        $this->assertArrayHasKey('-1,0', $this->stateHandler->getBoard());
+        // Black
+        $this->boardHandler->play('Q', '1,0');
 
-        // White (Move 6 tiles, fails with 'Tile must slide' error)
-        $this->boardHandler->move('-1,0', '5,-1');
-        $this->assertArrayNotHasKey('5,-1', $this->stateHandler->getBoard());
-        $this->assertArrayHasKey('-1,0', $this->stateHandler->getBoard());
+        // White
+        $this->boardHandler->play('S', '-1,0');
+
+        // Black
+        $this->boardHandler->play('B', '2,0');
 
         // White
         $this->boardHandler->move('-1,0', '2,-1');
-        $this->assertArrayNotHasKey('-1,0', $this->stateHandler->getBoard());
+
         $this->assertArrayHasKey('2,-1', $this->stateHandler->getBoard());
     }
 
     // Issue #8
-    public function testMoveSpiderInSurroundedTiles()
+    public function testMove_MoveSpiderFourTilesAroundCorner_MoveNotInState()
+    {
+        // White
+        $this->boardHandler->play('Q', '0,0');
+
+        // Black
+        $this->boardHandler->play('Q', '1,0');
+
+        // White
+        $this->boardHandler->play('S', '-1,0');
+
+        // Black
+        $this->boardHandler->play('B', '2,0');
+
+        // White (Move 4 tiles, fails with 'Tile must slide' error)
+        $this->boardHandler->move('-1,0', '3,-1');
+
+        $this->assertArrayNotHasKey('3,-1', $this->stateHandler->getBoard());
+    }
+
+    // Issue #8
+    public function testMove_MoveSpiderInSurroundedTiles_MoveNotInState()
     {
         // White
         $this->boardHandler->play('Q', '0,0');
@@ -243,17 +334,13 @@ class PieceTest extends TestCase
 
         // Black (Fails with 'Tile must slide' error)
         $this->boardHandler->move('3,-1', '1,-1');
-        $this->assertArrayNotHasKey('1,-1', $this->stateHandler->getBoard());
-        $this->assertArrayHasKey('3,-1', $this->stateHandler->getBoard());
 
-        // Black (Move 3 tiles)
-        $this->boardHandler->move('3,-1', '1,1');
-        $this->assertArrayNotHasKey('3,-1', $this->stateHandler->getBoard());
-        $this->assertArrayHasKey('1,1', $this->stateHandler->getBoard());
+        $this->assertArrayNotHasKey('1,-1', $this->stateHandler->getBoard());
     }
 
     // Issue #6
-    public function testMoveGrasshopperHorizontal() {
+    public function testMove_MoveGrasshopperLeftToRight_MoveInState()
+    {
         // White
         $this->boardHandler->play('Q', '0,0');
 
@@ -266,32 +353,78 @@ class PieceTest extends TestCase
         // Black
         $this->boardHandler->play('B', '2,0');
 
-        // White (Fails with 'Tile must slide' error)
-        $this->boardHandler->move('-1,0', '2,-1');
-        $this->assertArrayNotHasKey('2,-1', $this->stateHandler->getBoard());
-        $this->assertArrayHasKey('-1,0', $this->stateHandler->getBoard());
-
         // White
         $this->boardHandler->move('-1,0', '3,0');
-        $this->assertArrayNotHasKey('-1,0', $this->stateHandler->getBoard());
+
         $this->assertArrayHasKey('3,0', $this->stateHandler->getBoard());
-
-        // Black
-        $this->boardHandler->play('B', '2,-1');
-
-        // White (Fails with 'Tile must slide' error)
-        $this->boardHandler->move('3,0', '0,1');
-        $this->assertArrayNotHasKey('0,1', $this->stateHandler->getBoard());
-        $this->assertArrayHasKey('3,0', $this->stateHandler->getBoard());
-
-        // White
-        $this->boardHandler->move('3,0', '-1,0');
-        $this->assertArrayNotHasKey('3,0', $this->stateHandler->getBoard());
-        $this->assertArrayHasKey('-1,0', $this->stateHandler->getBoard());
     }
 
     // Issue #6
-    public function testMoveGrasshopperTLBR() {
+    public function testMove_MoveGrasshopperToNeighbourOfLeftToRight_MoveNotInState()
+    {
+        // White
+        $this->boardHandler->play('Q', '0,0');
+
+        // Black
+        $this->boardHandler->play('Q', '1,0');
+
+        // White
+        $this->boardHandler->play('G', '-1,0');
+
+        // Black
+        $this->boardHandler->play('B', '2,0');
+
+        // White
+        $this->boardHandler->move('-1,0', '3,-1');
+
+        $this->assertArrayNotHasKey('3,-1', $this->stateHandler->getBoard());
+    }
+
+    // Issue #6
+    public function testMove_MoveGrasshopperRightToLeft_MoveInState()
+    {
+        // White
+        $this->boardHandler->play('Q', '0,0');
+
+        // Black
+        $this->boardHandler->play('Q', '-1,0');
+
+        // White
+        $this->boardHandler->play('G', '1,0');
+
+        // Black
+        $this->boardHandler->play('B', '-2,0');
+
+        // White
+        $this->boardHandler->move('1,0', '-3,0');
+
+        $this->assertArrayHasKey('-3,0', $this->stateHandler->getBoard());
+    }
+
+    // Issue #6
+    public function testMove_MoveGrasshopperToNeighbourOfRightToLeft_MoveNotInState()
+    {
+        // White
+        $this->boardHandler->play('Q', '0,0');
+
+        // Black
+        $this->boardHandler->play('Q', '-1,0');
+
+        // White
+        $this->boardHandler->play('G', '1,0');
+
+        // Black
+        $this->boardHandler->play('B', '-2,0');
+
+        // White
+        $this->boardHandler->move('1,0', '-3,1');
+
+        $this->assertArrayNotHasKey('-3,1', $this->stateHandler->getBoard());
+    }
+
+    // Issue #6
+    public function testMove_MoveGrasshopperTopLeftToBottomRight_MoveInState()
+    {
         // White
         $this->boardHandler->play('Q', '0,0');
 
@@ -304,32 +437,35 @@ class PieceTest extends TestCase
         //Black
         $this->boardHandler->play('B', '2,0');
 
-        // White (Fails with 'Tile must slide' error)
-        $this->boardHandler->move('0,-1', '1,1');
-        $this->assertArrayNotHasKey('1,1', $this->stateHandler->getBoard());
-        $this->assertArrayHasKey('0,-1', $this->stateHandler->getBoard());
-
         // White
         $this->boardHandler->move('0,-1', '0,1');
-        $this->assertArrayNotHasKey('0,-1', $this->stateHandler->getBoard());
+
         $this->assertArrayHasKey('0,1', $this->stateHandler->getBoard());
-
-        // Black
-        $this->boardHandler->play('B', '3,0');
-
-        // White (Fails with 'Tile must slide' error)
-        $this->boardHandler->move('0,1', '1,-1');
-        $this->assertArrayNotHasKey('1,-1', $this->stateHandler->getBoard());
-        $this->assertArrayHasKey('0,1', $this->stateHandler->getBoard());
-
-        // White
-        $this->boardHandler->move('0,1', '0,-1');
-        $this->assertArrayNotHasKey('0,1', $this->stateHandler->getBoard());
-        $this->assertArrayHasKey('0,-1', $this->stateHandler->getBoard());
     }
 
     // Issue #6
-    public function testMoveGrasshopperTRBL()
+    public function testMove_MoveGrasshopperToNeighbourOfTopLeftToBottomRight_MoveNotInState()
+    {
+        // White
+        $this->boardHandler->play('Q', '0,0');
+
+        // Black
+        $this->boardHandler->play('Q', '1,0');
+
+        // White
+        $this->boardHandler->play('G', '0,-1');
+
+        //Black
+        $this->boardHandler->play('B', '2,0');
+
+        // White
+        $this->boardHandler->move('0,-1', '-1,1');
+
+        $this->assertArrayNotHasKey('-1,1', $this->stateHandler->getBoard());
+    }
+
+    // Issue #6
+    public function testMove_MoveGrasshopperBottomRightToTopLeft_MoveInState()
     {
         // White
         $this->boardHandler->play('Q', '0,0');
@@ -338,37 +474,125 @@ class PieceTest extends TestCase
         $this->boardHandler->play('Q', '-1,0');
 
         // White
-        $this->boardHandler->play('S', '1,-1');
+        $this->boardHandler->play('G', '0,1');
+
+        //Black
+        $this->boardHandler->play('B', '-2,0');
+
+        // White
+        $this->boardHandler->move('0,1', '0,-1');
+
+        $this->assertArrayHasKey('0,-1', $this->stateHandler->getBoard());
+    }
+
+    // Issue #6
+    public function testMove_MoveGrasshopperToNeighbourOfBottomRightToTopLeft_MoveNotInState()
+    {
+        // White
+        $this->boardHandler->play('Q', '0,0');
+
+        // Black
+        $this->boardHandler->play('Q', '-1,0');
+
+        // White
+        $this->boardHandler->play('G', '0,1');
+
+        //Black
+        $this->boardHandler->play('B', '-2,0');
+
+        // White
+        $this->boardHandler->move('0,1', '1,-1');
+
+        $this->assertArrayNotHasKey('1,-1', $this->stateHandler->getBoard());
+    }
+
+    // Issue #6
+    public function testMove_MoveGrasshopperTopRightToBottomLeft_MoveInState()
+    {
+        // White
+        $this->boardHandler->play('Q', '0,0');
+
+        // Black
+        $this->boardHandler->play('Q', '-1,0');
+
+        // White
+        $this->boardHandler->play('G', '1,-1');
 
         // Black
         $this->boardHandler->play('B', '-2,0');
 
-        // White (Fails with 'Tile must slide' error)
-        $this->boardHandler->move('1,-1', '-2,1');
-        $this->assertArrayNotHasKey('-2,1', $this->stateHandler->getBoard());
-        $this->assertArrayHasKey('1,-1', $this->stateHandler->getBoard());
-
         // White
         $this->boardHandler->move('1,-1', '-1,1');
-        $this->assertArrayNotHasKey('1,-1', $this->stateHandler->getBoard());
+
         $this->assertArrayHasKey('-1,1', $this->stateHandler->getBoard());
+    }
+
+    // Issue #6
+    public function testMove_MoveGrasshopperToNeighbourOfTopRightToBottomLeft_MoveNotInState()
+    {
+        // White
+        $this->boardHandler->play('Q', '0,0');
 
         // Black
-        $this->boardHandler->play('B', '-3,0');
+        $this->boardHandler->play('Q', '-1,0');
 
-        // White (Fails with 'Tile must slide' error)
-        $this->boardHandler->move('-1,1', '0,-1');
-        $this->assertArrayNotHasKey('0,-1', $this->stateHandler->getBoard());
-        $this->assertArrayHasKey('-1,1', $this->stateHandler->getBoard());
+        // White
+        $this->boardHandler->play('G', '1,-1');
+
+        // Black
+        $this->boardHandler->play('B', '-2,0');
+
+        // White
+        $this->boardHandler->move('1,-1', '0,1');
+
+        $this->assertArrayNotHasKey('0,1', $this->stateHandler->getBoard());
+    }
+
+    // Issue #6
+    public function testMove_MoveGrasshopperBottomLeftToTopRight_MoveInState()
+    {
+        // White
+        $this->boardHandler->play('Q', '0,0');
+
+        // Black
+        $this->boardHandler->play('Q', '1,0');
+
+        // White
+        $this->boardHandler->play('G', '-1,1');
+
+        // Black
+        $this->boardHandler->play('B', '2,0');
 
         // White
         $this->boardHandler->move('-1,1', '1,-1');
-        $this->assertArrayNotHasKey('-1,1', $this->stateHandler->getBoard());
+
         $this->assertArrayHasKey('1,-1', $this->stateHandler->getBoard());
     }
 
     // Issue #6
-    public function testMoveGrasshopperOverEmptySpace() {
+    public function testMove_MoveGrasshopperToNeighbourOfBottomLeftToTopRight_MoveNotInState()
+    {
+        // White
+        $this->boardHandler->play('Q', '0,0');
+
+        // Black
+        $this->boardHandler->play('Q', '1,0');
+
+        // White
+        $this->boardHandler->play('G', '-1,1');
+
+        // Black
+        $this->boardHandler->play('B', '2,0');
+
+        // White
+        $this->boardHandler->move('-1,1', '0,-1');
+
+        $this->assertArrayNotHasKey('0,-1', $this->stateHandler->getBoard());
+    }
+
+    // Issue #6
+    public function testMove_MoveGrasshopperOverEmptySpace_MoveNotInState()
+    {
         // White
         $this->boardHandler->play('Q', '0,0');
 
@@ -401,17 +625,13 @@ class PieceTest extends TestCase
 
         // White (Fails with 'Tile must slide' error)
         $this->boardHandler->move('0,-1', '0,3');
-        $this->assertArrayNotHasKey('0,3', $this->stateHandler->getBoard());
-        $this->assertArrayHasKey('0,-1', $this->stateHandler->getBoard());
 
-        // White
-        $this->boardHandler->move('0,-1', '0,1');
-        $this->assertArrayNotHasKey('0,-1', $this->stateHandler->getBoard());
-        $this->assertArrayHasKey('0,1', $this->stateHandler->getBoard());
+        $this->assertArrayNotHasKey('0,3', $this->stateHandler->getBoard());
     }
 
     // Issue #6
-    public function testMoveGrasshopperToNeighbouringEmptyPosition() {
+    public function testMove_MoveGrasshopperToNeighbouringEmptyPosition_MoveNotInState()
+    {
         // White
         $this->boardHandler->play('Q', '0,0');
 
@@ -426,7 +646,7 @@ class PieceTest extends TestCase
 
         // White (Fails with 'Tile must slide' error)
         $this->boardHandler->move('0,-1', '-1,0');
+
         $this->assertArrayNotHasKey('-1,0', $this->stateHandler->getBoard());
-        $this->assertArrayHasKey('0,-1', $this->stateHandler->getBoard());
     }
 }

@@ -6,7 +6,8 @@ class AIConnectionHandler
 {
     private string $url = 'http://aiserver:5000/';
 
-    public function getAIMoveArray($moveNumber, $hand, $board)
+    // Receive response from AI server as an array
+    public function getResults($moveNumber, $hand, $board)
     {
         $content = [
             'move_number' => $moveNumber,

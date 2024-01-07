@@ -242,7 +242,7 @@ class BoardTest extends TestCase
     }
 
     // Issue #4
-    public function testPlay_BlackPlacesTileOnPreviousMovePosition_MoveInState()
+    public function testPlay_BlackPlacesTileOnPositionThatPreviouslyMoved_MoveInState()
     {
         // White
         $this->boardHandler->play('Q', '0,0');
@@ -557,7 +557,7 @@ class BoardTest extends TestCase
     }
 
     // Issue #5
-    public function testPlay_PlayAfterTwoTilePlaceOneUndo_MoveInState()
+    public function testPlay_PlayAfterTwoTilesPlaceOneUndo_MoveInState()
     {
         // White
         $this->boardHandler->play('Q', '0,0');
@@ -574,7 +574,7 @@ class BoardTest extends TestCase
     }
 
     // Issue #5
-    public function testPlay_PlayAfterTwoTilePlaceOneUndo_MoveInDatabase()
+    public function testPlay_PlayAfterTwoTilesPlaceOneUndo_MoveInDatabase()
     {
         // White
         $this->boardHandler->play('Q', '0,0');
