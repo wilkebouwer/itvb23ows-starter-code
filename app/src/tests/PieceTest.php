@@ -1,6 +1,6 @@
 <?php
 
-use Mock\BackendHandlerMock;
+use Fake\BackendHandlerMock;
 use PHPUnit\Framework\TestCase;
 use Board\BoardHandler as BoardHandler;
 
@@ -12,7 +12,7 @@ class PieceTest extends TestCase
         $boardHandler = new BoardHandler($backendHandler);
         $stateHandler = $backendHandler->getStateHandler();
 
-        $stateHandler->restart();
+        $backendHandler->restart();
 
         // White
         $boardHandler->play('Q', '0,0');
@@ -38,7 +38,7 @@ class PieceTest extends TestCase
         $boardHandler = new BoardHandler($backendHandler);
         $stateHandler = $backendHandler->getStateHandler();
 
-        $stateHandler->restart();
+        $backendHandler->restart();
 
         // White
         $boardHandler->play('Q', '0,0');
@@ -69,7 +69,7 @@ class PieceTest extends TestCase
         $boardHandler = new BoardHandler($backendHandler);
         $stateHandler = $backendHandler->getStateHandler();
 
-        $stateHandler->restart();
+        $backendHandler->restart();
 
         // White
         $boardHandler->play('Q', '0,0');
@@ -121,7 +121,7 @@ class PieceTest extends TestCase
         $boardHandler = new BoardHandler($backendHandler);
         $stateHandler = $backendHandler->getStateHandler();
 
-        $stateHandler->restart();
+        $backendHandler->restart();
 
         // White
         $boardHandler->play('Q', '0,0');
@@ -178,7 +178,7 @@ class PieceTest extends TestCase
         $boardHandler = new BoardHandler($backendHandler);
         $stateHandler = $backendHandler->getStateHandler();
 
-        $stateHandler->restart();
+        $backendHandler->restart();
 
         // White
         $boardHandler->play('Q', '0,0');
@@ -228,7 +228,7 @@ class PieceTest extends TestCase
         $boardHandler = new BoardHandler($backendHandler);
         $stateHandler = $backendHandler->getStateHandler();
 
-        $stateHandler->restart();
+        $backendHandler->restart();
 
         // White
         $boardHandler->play('Q', '0,0');
@@ -280,7 +280,7 @@ class PieceTest extends TestCase
         $boardHandler = new BoardHandler($backendHandler);
         $stateHandler = $backendHandler->getStateHandler();
 
-        $stateHandler->restart();
+        $backendHandler->restart();
 
         // White
         $boardHandler->play('Q', '0,0');
@@ -324,7 +324,7 @@ class PieceTest extends TestCase
         $boardHandler = new BoardHandler($backendHandler);
         $stateHandler = $backendHandler->getStateHandler();
 
-        $stateHandler->restart();
+        $backendHandler->restart();
 
         // White
         $boardHandler->play('Q', '0,0');
@@ -369,7 +369,7 @@ class PieceTest extends TestCase
         $boardHandler = new BoardHandler($backendHandler);
         $stateHandler = $backendHandler->getStateHandler();
 
-        $stateHandler->restart();
+        $backendHandler->restart();
 
         // White
         $boardHandler->play('Q', '0,0');
@@ -413,7 +413,7 @@ class PieceTest extends TestCase
         $boardHandler = new BoardHandler($backendHandler);
         $stateHandler = $backendHandler->getStateHandler();
 
-        $stateHandler->restart();
+        $backendHandler->restart();
 
         // White
         $boardHandler->play('Q', '0,0');
@@ -462,7 +462,7 @@ class PieceTest extends TestCase
         $boardHandler = new BoardHandler($backendHandler);
         $stateHandler = $backendHandler->getStateHandler();
 
-        $stateHandler->restart();
+        $backendHandler->restart();
 
         // White
         $boardHandler->play('Q', '0,0');

@@ -1,459 +1,758 @@
 <?php
 
-use Mock\BackendHandlerMock;
+use Fake\BackendHandlerMock;
 use PHPUnit\Framework\TestCase;
 use Board\BoardHandler as BoardHandler;
 
 class BoardTest extends TestCase
 {
-    // Issue #1
-    public function testOnlyGetAvailablePiecesForPlayer() {
-        $backendHandler = new BackendHandlerMock();
-        $boardHandler = new BoardHandler($backendHandler);
-        $stateHandler = $backendHandler->getStateHandler();
+    private $backendHandler;
+    private $boardHandler;
+    private $stateHandler;
 
-        $stateHandler->restart();
+    protected function setUp(): void
+    {
+        $this->backendHandler = new BackendHandlerMock();
+        $this->boardHandler = new BoardHandler($this->backendHandler);
+        $this->stateHandler = $this->backendHandler->getStateHandler();
 
-        // White
-        $this->assertContains('Q', $boardHandler->getAvailableHandPieces());
-        $boardHandler->play('Q', '0,0');
-
-        // Black
-        $this->assertContains('Q', $boardHandler->getAvailableHandPieces());
-        $boardHandler->play('Q', '1,0');
-
-        // White
-        $this->assertNotContains('Q', $boardHandler->getAvailableHandPieces());
-        $boardHandler->play('B', '-1,0');
-
-        // Black
-        $this->assertNotContains('Q', $boardHandler->getAvailableHandPieces());
+        $this->backendHandler->restart();
     }
 
     // Issue #1
-    public function testOnlyGetAvailableMovePositionsForPlayer() {
-        $backendHandler = new BackendHandlerMock();
-        $boardHandler = new BoardHandler($backendHandler);
-        $stateHandler = $backendHandler->getStateHandler();
-
-        $stateHandler->restart();
-
+    public function testPlay_GetAvailablePiecesForWhite_QueenInAvailablePieces()
+    {
         // White
-        $boardHandler->play('A', '0,0');
+        $availableHandPieces = $this->boardHandler->getAvailableHandPieces();
+
+        $this->assertContains('Q', $availableHandPieces);
+    }
+
+    // Issue #1
+    public function testPlay_GetAvailablePiecesForBlack_QueenInAvailablePieces()
+    {
+        // White
+        $this->boardHandler->play('Q', '0,0');
 
         // Black
-        $this->assertNotContains('0,0', $boardHandler->getPlayerPiecePositions());
-        $boardHandler->play('A', '1,0');
+        $availableHandPieces = $this->boardHandler->getAvailableHandPieces();
 
+        $this->assertContains('Q', $availableHandPieces);
+    }
+
+    // Issue #1
+    public function testPlay_GetAvailablePiecesForWhite_QueenNotInAvailablePieces()
+    {
         // White
-        $this->assertContains('0,0', $boardHandler->getPlayerPiecePositions());
-        $this->assertNotContains('1,0', $boardHandler->getPlayerPiecePositions());
-        $boardHandler->play('A', '-1,0');
+        $this->boardHandler->play('Q', '0,0');
 
         // Black
-        $this->assertContains('1,0', $boardHandler->getPlayerPiecePositions());
-        $this->assertNotContains('-1,0', $boardHandler->getPlayerPiecePositions());
-        $boardHandler->play('A', '2,0');
+        $this->boardHandler->play('Q', '1,0');
+
+        $availableHandPieces = $this->boardHandler->getAvailableHandPieces();
 
         // White
-        $this->assertContains('-1,0', $boardHandler->getPlayerPiecePositions());
-        $this->assertNotContains('2,0', $boardHandler->getPlayerPiecePositions());
-        $boardHandler->play('A', '-2,0');
+        $this->assertNotContains('Q', $availableHandPieces);
+    }
+
+    // Issue #1
+    public function testPlay_GetAvailablePiecesForBlack_QueenNotInAvailablePieces()
+    {
+        // White
+        $this->boardHandler->play('Q', '0,0');
+
+        // Black
+        $this->boardHandler->play('Q', '1,0');
+
+        // White
+        $this->boardHandler->play('B', '-1,0');
+
+        // Black
+        $this->assertNotContains('Q', $this->boardHandler->getAvailableHandPieces());
+    }
+
+    // Issue #1
+    public function testPlay_GetAvailableMovePositionsForBlackAtFirstMove_LastWhitePositionNotInPositionsList()
+    {
+        // White
+        $this->boardHandler->play('A', '0,0');
+
+        // Black
+        $this->assertNotContains('0,0', $this->boardHandler->getPlayerPiecePositions());
+    }
+
+    // Issue #1
+    public function testPlay_GetAvailableMovePositionsForWhiteAtFirstMove_LastBlackPositionNotInPositionsList()
+    {
+        // White
+        $this->boardHandler->play('A', '0,0');
+
+        // Black
+        $this->boardHandler->play('A', '1,0');
+
+        // White
+        $this->assertNotContains('1,0', $this->boardHandler->getPlayerPiecePositions());
+    }
+
+    // Issue #1
+    public function testPlay_GetAvailableMovePositionsForWhiteAtFirstMove_LastWhitePositionInPositionsList()
+    {
+        // White
+        $this->boardHandler->play('A', '0,0');
+
+        // Black
+        $this->boardHandler->play('A', '1,0');
+
+        // White
+        $this->assertContains('0,0', $this->boardHandler->getPlayerPiecePositions());
+    }
+
+    // Issue #1
+    public function testPlay_GetAvailableMovePositionsForBlackAtSecondMove_LastWhitePositionNotInPositionsList()
+    {
+        // White
+        $this->boardHandler->play('A', '0,0');
+
+        // Black
+        $this->boardHandler->play('A', '1,0');
+
+        // White
+        $this->boardHandler->play('A', '-1,0');
+
+        // Black
+        $this->assertNotContains('-1,0', $this->boardHandler->getPlayerPiecePositions());
+    }
+
+    // Issue #1
+    public function test_GetAvailableMovePositionsForBlackAtSecondMove_LastBlackPositionInPositionsList()
+    {
+        // White
+        $this->boardHandler->play('A', '0,0');
+
+        // Black
+        $this->boardHandler->play('A', '1,0');
+
+        // White
+        $this->boardHandler->play('A', '-1,0');
+
+        // Black
+        $this->assertContains('1,0', $this->boardHandler->getPlayerPiecePositions());
     }
 
     // Issue #2
-    public function testMoveToUninitializedPosition() {
-        $backendHandler = new BackendHandlerMock();
-        $boardHandler = new BoardHandler($backendHandler);
-        $stateHandler = $backendHandler->getStateHandler();
-
-        $stateHandler->restart();
-
+    public function testMove_MoveToUninitializedPosition_MoveInState()
+    {
         // White
-        $boardHandler->play('Q', '0,0');
+        $this->boardHandler->play('Q', '0,0');
 
         // Black
-        $boardHandler->play('Q', '1,0');
+        $this->boardHandler->play('Q', '1,0');
 
         // White
-        $boardHandler->move('0,0', '0,1');
-        $this->assertArrayHasKey('0,1', $stateHandler->getBoard());
+        $this->boardHandler->move('0,0', '0,1');
+
+        $this->assertArrayHasKey('0,1', $this->stateHandler->getBoard());
     }
 
     // Issue #3
-    public function testPlayAfterMustPlaceQueenError() {
-        $backendHandler = new BackendHandlerMock();
-        $boardHandler = new BoardHandler($backendHandler);
-        $stateHandler = $backendHandler->getStateHandler();
-
-        $stateHandler->restart();
-
+    public function testPlay_WhiteGetsPlaceQueenError_MoveNotInState()
+    {
         // White
-        $boardHandler->play('A', '0,0');
+        $this->boardHandler->play('A', '0,0');
 
         // Black
-        $boardHandler->play('A', '1,0');
+        $this->boardHandler->play('A', '1,0');
 
         // White
-        $boardHandler->play('A', '-1,0');
+        $this->boardHandler->play('A', '-1,0');
 
         // Black
-        $boardHandler->play('A', '2,0');
+        $this->boardHandler->play('A', '2,0');
 
         // White
-        $boardHandler->play('A', '-2,0');
+        $this->boardHandler->play('A', '-2,0');
 
         // Black
-        $boardHandler->play('A', '3,0');
+        $this->boardHandler->play('A', '3,0');
 
         // White (Fails with 'Must play queen bee')
-        $boardHandler->play('B', '-3,0');
-        $this->assertArrayNotHasKey('-3,0', $stateHandler->getBoard());
+        $this->boardHandler->play('B', '-3,0');
 
+        $this->assertArrayNotHasKey('-3,0', $this->stateHandler->getBoard());
+    }
+
+    // Issue #3
+    public function testPlay_BlackPlaysAfterMustPlaceQueenError_MoveInState()
+    {
         // White
-        $boardHandler->play('Q', '-3,0');
-        $this->assertArrayHasKey('-3,0', $stateHandler->getBoard());
-
-        // Black (Fails with 'Must play queen bee')
-        $boardHandler->play('B', '4,0');
-        $this->assertArrayNotHasKey('4.0', $stateHandler->getBoard());
+        $this->boardHandler->play('A', '0,0');
 
         // Black
-        $boardHandler->play('Q', '4,0');
-        $this->assertArrayHasKey('4,0', $stateHandler->getBoard());
+        $this->boardHandler->play('A', '1,0');
 
-        // White (For good measure)
-        $boardHandler->play('B', '-4,0');
-        $this->assertArrayHasKey('-4,0', $stateHandler->getBoard());
+        // White
+        $this->boardHandler->play('A', '-1,0');
+
+        // Black
+        $this->boardHandler->play('A', '2,0');
+
+        // White
+        $this->boardHandler->play('A', '-2,0');
+
+        // Black
+        $this->boardHandler->play('A', '3,0');
+
+        // White (Fails with 'Must play queen bee')
+        $this->boardHandler->play('B', '-3,0');
+
+        // White
+        $this->boardHandler->play('Q', '-3,0');
+
+        $this->assertArrayHasKey('-3,0', $this->stateHandler->getBoard());
     }
 
     // Issue #4
-    public function testPlaceTileOnPreviousMovePosition() {
-        $backendHandler = new BackendHandlerMock();
-        $boardHandler = new BoardHandler($backendHandler);
-        $stateHandler = $backendHandler->getStateHandler();
-
-        $stateHandler->restart();
-
+    public function testPlay_WhitePlacesTileOnPositionThatPreviouslyMoved_MoveInState()
+    {
         // White
-        $boardHandler->play('Q', '0,0');
+        $this->boardHandler->play('Q', '0,0');
 
         // Black
-        $boardHandler->play('Q', '1,0');
+        $this->boardHandler->play('Q', '1,0');
 
         // White
-        $boardHandler->play('A', '-1,0');
+        $this->boardHandler->play('A', '-1,0');
 
         // Black
-        $boardHandler->play('A', '2,0');
+        $this->boardHandler->play('A', '2,0');
 
         // White
-        $boardHandler->move('-1,0', '0,-1');
-        $this->assertArrayNotHasKey('-1,0', $stateHandler->getBoard());
-        $this->assertArrayHasKey('0,-1', $stateHandler->getBoard());
+        $this->boardHandler->move('-1,0', '0,-1');
 
         // Black
-        $boardHandler->move('2,0', '2,-1');
-        $this->assertArrayNotHasKey('2,0', $stateHandler->getBoard());
-        $this->assertArrayHasKey('2,-1', $stateHandler->getBoard());
+        $this->boardHandler->move('2,0', '2,-1');
 
         // White
-        $boardHandler->play('S', '-1,0');
-        $this->assertArrayHasKey('-1,0', $stateHandler->getBoard());
+        $this->boardHandler->play('S', '-1,0');
+
+        $this->assertArrayHasKey('-1,0', $this->stateHandler->getBoard());
+    }
+
+    // Issue #4
+    public function testPlay_BlackPlacesTileOnPreviousMovePosition_MoveInState()
+    {
+        // White
+        $this->boardHandler->play('Q', '0,0');
 
         // Black
-        $boardHandler->play('S', '2,0');
-        $this->assertArrayHasKey('2,0', $stateHandler->getBoard());
+        $this->boardHandler->play('Q', '1,0');
+
+        // White
+        $this->boardHandler->play('A', '-1,0');
+
+        // Black
+        $this->boardHandler->play('A', '2,0');
+
+        // White
+        $this->boardHandler->move('-1,0', '0,-1');
+
+        // Black
+        $this->boardHandler->move('2,0', '2,-1');
+
+        // White
+        $this->boardHandler->play('S', '-1,0');
+
+        // Black
+        $this->boardHandler->play('S', '2,0');
+
+        $this->assertArrayHasKey('2,0', $this->stateHandler->getBoard());
     }
 
     // Issue #10
-    public function testWhiteWin() {
-        $backendHandler = new BackendHandlerMock();
-        $boardHandler = new BoardHandler($backendHandler);
-        $stateHandler = $backendHandler->getStateHandler();
-
-        $stateHandler->restart();
-
+    public function testMove_WhiteMakesWinningMove_BlackLost()
+    {
         // White
-        $boardHandler->play('Q', '0,0');
-        $this->assertFalse($boardHandler->lostGame(0));
-        $this->assertFalse($boardHandler->lostGame(1));
+        $this->boardHandler->play('Q', '0,0');
 
         // Black
-        $boardHandler->play('Q', '1,0');
-        $this->assertFalse($boardHandler->lostGame(0));
-        $this->assertFalse($boardHandler->lostGame(1));
+        $this->boardHandler->play('Q', '1,0');
 
         // White
-        $boardHandler->play('A', '-1,0');
-        $this->assertFalse($boardHandler->lostGame(0));
-        $this->assertFalse($boardHandler->lostGame(1));
+        $this->boardHandler->play('A', '-1,0');
 
         // Black
-        $boardHandler->play('B', '1,1');
-        $this->assertFalse($boardHandler->lostGame(0));
-        $this->assertFalse($boardHandler->lostGame(1));
+        $this->boardHandler->play('B', '1,1');
 
         // White
-        $boardHandler->play('A', '-2,0');
-        $this->assertFalse($boardHandler->lostGame(0));
-        $this->assertFalse($boardHandler->lostGame(1));
+        $this->boardHandler->play('A', '-2,0');
 
         // Black
-        $boardHandler->play('B', '2,-1');
-        $this->assertFalse($boardHandler->lostGame(0));
-        $this->assertFalse($boardHandler->lostGame(1));
+        $this->boardHandler->play('B', '2,-1');
 
         // White
-        $boardHandler->move('-2,0', '1,-1');
-        $this->assertFalse($boardHandler->lostGame(0));
-        $this->assertFalse($boardHandler->lostGame(1));
+        $this->boardHandler->move('-2,0', '1,-1');
 
         // Black
-        $boardHandler->play('A', '2,0');
-        $this->assertFalse($boardHandler->lostGame(0));
-        $this->assertFalse($boardHandler->lostGame(1));
+        $this->boardHandler->play('A', '2,0');
 
         // White (Winning move)
-        $boardHandler->move('-1,0', '0,1');
-        $this->assertFalse($boardHandler->lostGame(0));
-        $this->assertTrue($boardHandler->lostGame(1));
+        $this->boardHandler->move('-1,0', '0,1');
+
+        $this->assertTrue($this->boardHandler->lostGame(1));
     }
 
     // Issue #10
-    public function testBlackWin() {
-        $backendHandler = new BackendHandlerMock();
-        $boardHandler = new BoardHandler($backendHandler);
-        $stateHandler = $backendHandler->getStateHandler();
-
-        $stateHandler->restart();
-
+    public function testMove_BlackMakesWinningMove_WhiteLost()
+    {
         // White
-        $boardHandler->play('Q', '0,0');
-        $this->assertFalse($boardHandler->lostGame(0));
-        $this->assertFalse($boardHandler->lostGame(1));
+        $this->boardHandler->play('Q', '0,0');
 
         // Black
-        $boardHandler->play('Q', '1,0');
-        $this->assertFalse($boardHandler->lostGame(0));
-        $this->assertFalse($boardHandler->lostGame(1));
+        $this->boardHandler->play('Q', '1,0');
 
         // White
-        $boardHandler->play('B', '-1,0');
-        $this->assertFalse($boardHandler->lostGame(0));
-        $this->assertFalse($boardHandler->lostGame(1));
+        $this->boardHandler->play('B', '-1,0');
 
         // Black
-        $boardHandler->play('A', '2,0');
-        $this->assertFalse($boardHandler->lostGame(0));
-        $this->assertFalse($boardHandler->lostGame(1));
+        $this->boardHandler->play('A', '2,0');
 
         // White
-        $boardHandler->play('B', '0,-1');
-        $this->assertFalse($boardHandler->lostGame(0));
-        $this->assertFalse($boardHandler->lostGame(1));
+        $this->boardHandler->play('B', '0,-1');
 
         // Black
-        $boardHandler->play('A', '3,0');
-        $this->assertFalse($boardHandler->lostGame(0));
-        $this->assertFalse($boardHandler->lostGame(1));
+        $this->boardHandler->play('A', '3,0');
 
         // White
-        $boardHandler->play('S', '-1,1');
-        $this->assertFalse($boardHandler->lostGame(0));
-        $this->assertFalse($boardHandler->lostGame(1));
+        $this->boardHandler->play('S', '-1,1');
 
         // Black
-        $boardHandler->move('3,0', '1,-1');
-        $this->assertFalse($boardHandler->lostGame(0));
-        $this->assertFalse($boardHandler->lostGame(1));
+        $this->boardHandler->move('3,0', '1,-1');
 
         // White
-        $boardHandler->play('A', '-1,-1');
-        $this->assertFalse($boardHandler->lostGame(0));
-        $this->assertFalse($boardHandler->lostGame(1));
+        $this->boardHandler->play('A', '-1,-1');
 
         // Black (Winning move)
-        $boardHandler->move('2,0', '0,1');
-        $this->assertTrue($boardHandler->lostGame(0));
-        $this->assertFalse($boardHandler->lostGame(1));
+        $this->boardHandler->move('2,0', '0,1');
+
+        $this->assertTrue($this->boardHandler->lostGame(0));
     }
 
     // Issue #10
-    public function testDraw() {
-        $backendHandler = new BackendHandlerMock();
-        $boardHandler = new BoardHandler($backendHandler);
-        $stateHandler = $backendHandler->getStateHandler();
-
-        $stateHandler->restart();
-
+    public function testMove_MakeDrawMove_WhiteLost()
+    {
         // White
-        $boardHandler->play('Q', '0,0');
-        $this->assertFalse($boardHandler->lostGame(0));
-        $this->assertFalse($boardHandler->lostGame(1));
+        $this->boardHandler->play('Q', '0,0');
 
         // Black
-        $boardHandler->play('Q', '1,0');
-        $this->assertFalse($boardHandler->lostGame(0));
-        $this->assertFalse($boardHandler->lostGame(1));
+        $this->boardHandler->play('Q', '1,0');
 
         // White
-        $boardHandler->play('B', '-1,0');
-        $this->assertFalse($boardHandler->lostGame(0));
-        $this->assertFalse($boardHandler->lostGame(1));
+        $this->boardHandler->play('B', '-1,0');
 
         // Black
-        $boardHandler->play('B', '2,0');
-        $this->assertFalse($boardHandler->lostGame(0));
-        $this->assertFalse($boardHandler->lostGame(1));
+        $this->boardHandler->play('B', '2,0');
 
         // White
-        $boardHandler->play('A', '-2,0');
-        $this->assertFalse($boardHandler->lostGame(0));
-        $this->assertFalse($boardHandler->lostGame(1));
+        $this->boardHandler->play('A', '-2,0');
 
         // Black
-        $boardHandler->play('A', '3,0');
-        $this->assertFalse($boardHandler->lostGame(0));
-        $this->assertFalse($boardHandler->lostGame(1));
+        $this->boardHandler->play('A', '3,0');
 
         // White
-        $boardHandler->play('A', '-3,0');
-        $this->assertFalse($boardHandler->lostGame(0));
-        $this->assertFalse($boardHandler->lostGame(1));
+        $this->boardHandler->play('A', '-3,0');
 
         // Black
-        $boardHandler->play('A', '4,0');
-        $this->assertFalse($boardHandler->lostGame(0));
-        $this->assertFalse($boardHandler->lostGame(1));
+        $this->boardHandler->play('A', '4,0');
 
         // White
-        $boardHandler->play('A', '-4,0');
-        $this->assertFalse($boardHandler->lostGame(0));
-        $this->assertFalse($boardHandler->lostGame(1));
+        $this->boardHandler->play('A', '-4,0');
 
         // Black
-        $boardHandler->play('A', '5,0');
-        $this->assertFalse($boardHandler->lostGame(0));
-        $this->assertFalse($boardHandler->lostGame(1));
+        $this->boardHandler->play('A', '5,0');
 
         // White
-        $boardHandler->move('-4,0', '0,-1');
-        $this->assertFalse($boardHandler->lostGame(0));
-        $this->assertFalse($boardHandler->lostGame(1));
+        $this->boardHandler->move('-4,0', '0,-1');
 
         // Black
-        $boardHandler->move('5,0', '2,-1');
-        $this->assertFalse($boardHandler->lostGame(0));
-        $this->assertFalse($boardHandler->lostGame(1));
+        $this->boardHandler->move('5,0', '2,-1');
 
         // White
-        $boardHandler->move('-3,0', '-1,1');
-        $this->assertFalse($boardHandler->lostGame(0));
-        $this->assertFalse($boardHandler->lostGame(1));
+        $this->boardHandler->move('-3,0', '-1,1');
 
         // Black
-        $boardHandler->move('4,0', '1,1');
-        $this->assertFalse($boardHandler->lostGame(0));
-        $this->assertFalse($boardHandler->lostGame(1));
+        $this->boardHandler->move('4,0', '1,1');
 
         // White
-        $boardHandler->move('-2,0', '1,-1');
-        $this->assertFalse($boardHandler->lostGame(0));
-        $this->assertFalse($boardHandler->lostGame(1));
+        $this->boardHandler->move('-2,0', '1,-1');
 
         // Black (Draw move)
-        $boardHandler->move('3,0', '0,1');
-        $this->assertTrue($boardHandler->lostGame(0));
-        $this->assertTrue($boardHandler->lostGame(1));
+        $this->boardHandler->move('3,0', '0,1');
+
+        $this->assertTrue($this->boardHandler->lostGame(0));
+    }
+
+    // Issue #10
+    public function testMove_MakeDrawMove_BlackLost()
+    {
+        // White
+        $this->boardHandler->play('Q', '0,0');
+
+        // Black
+        $this->boardHandler->play('Q', '1,0');
+
+        // White
+        $this->boardHandler->play('B', '-1,0');
+
+        // Black
+        $this->boardHandler->play('B', '2,0');
+
+        // White
+        $this->boardHandler->play('A', '-2,0');
+
+        // Black
+        $this->boardHandler->play('A', '3,0');
+
+        // White
+        $this->boardHandler->play('A', '-3,0');
+
+        // Black
+        $this->boardHandler->play('A', '4,0');
+
+        // White
+        $this->boardHandler->play('A', '-4,0');
+
+        // Black
+        $this->boardHandler->play('A', '5,0');
+
+        // White
+        $this->boardHandler->move('-4,0', '0,-1');
+
+        // Black
+        $this->boardHandler->move('5,0', '2,-1');
+
+        // White
+        $this->boardHandler->move('-3,0', '-1,1');
+
+        // Black
+        $this->boardHandler->move('4,0', '1,1');
+
+        // White
+        $this->boardHandler->move('-2,0', '1,-1');
+
+        // Black (Draw move)
+        $this->boardHandler->move('3,0', '0,1');
+
+        $this->assertTrue($this->boardHandler->lostGame(1));
     }
 
     // Issue #9
-    public function testPass() {
-        $backendHandler = new BackendHandlerMock();
-        $boardHandler = new BoardHandler($backendHandler);
-        $stateHandler = $backendHandler->getStateHandler();
-
-        $stateHandler->restart();
-
+    public function testMove_OtherPlayerMovesAfterPass_MoveInState() {
         // White
-        $boardHandler->play('Q', '0,0');
+        $this->boardHandler->play('Q', '0,0');
 
         // Black
-        $boardHandler->play('Q', '1,0');
+        $this->boardHandler->play('Q', '1,0');
 
         // White
-        $boardHandler->play('B', '-1,0');
+        $this->boardHandler->play('B', '-1,0');
 
         // Black
-        $boardHandler->play('A', '2,0');
+        $this->boardHandler->play('A', '2,0');
 
         // White
-        $boardHandler->play('B', '-2,0');
+        $this->boardHandler->play('B', '-2,0');
 
         // Black
-        $boardHandler->play('A', '3,0');
+        $this->boardHandler->play('A', '3,0');
 
         // White
-        $boardHandler->play('G', '-3,0');
+        $this->boardHandler->play('G', '-3,0');
 
         // Black
-        $boardHandler->play('A', '4,0');
+        $this->boardHandler->play('A', '4,0');
 
         // White
-        $boardHandler->play('G', '-4,0');
+        $this->boardHandler->play('G', '-4,0');
 
         // Black
-        $boardHandler->play('S', '5,0');
+        $this->boardHandler->play('S', '5,0');
 
         // White
-        $boardHandler->play('G', '-5,0');
+        $this->boardHandler->play('G', '-5,0');
 
         // Black
-        $boardHandler->play('S', '6,0');
+        $this->boardHandler->play('S', '6,0');
 
         // White
-        $boardHandler->play('S', '-6,0');
+        $this->boardHandler->play('S', '-6,0');
 
         // Black
-        $boardHandler->play('G', '7,0');
+        $this->boardHandler->play('G', '7,0');
 
         // White
-        $boardHandler->play('S', '-7,0');
+        $this->boardHandler->play('S', '-7,0');
 
         // Black
-        $boardHandler->play('G', '8,0');
+        $this->boardHandler->play('G', '8,0');
 
         // White
-        $boardHandler->play('A', '-8,0');
+        $this->boardHandler->play('A', '-8,0');
 
         // Black
-        $boardHandler->play('G', '9,0');
+        $this->boardHandler->play('G', '9,0');
 
         // White
-        $boardHandler->play('A', '-9,0');
+        $this->boardHandler->play('A', '-9,0');
 
         // Black
-        $boardHandler->play('B', '10,0');
+        $this->boardHandler->play('B', '10,0');
 
         // White
-        $boardHandler->play('A', '-10,0');
+        $this->boardHandler->play('A', '-10,0');
 
         // Black
-        $boardHandler->play('B', '11,0');
-
-        // White (Fails with 'Play or move is still possible' error)
-        $boardHandler->pass();
+        $this->boardHandler->play('B', '11,0');
 
         // White
-        $boardHandler->move('-10,0', '12,0');
+        $this->boardHandler->move('-10,0', '12,0');
 
         // Black
-        $boardHandler->pass();
+        $this->boardHandler->pass();
 
         // White (Can make move because of black's successful pass)
-        $boardHandler->move('-9,0', '13,0');
-        $this->assertArrayNotHasKey('-9,0', $stateHandler->getBoard());
-        $this->assertArrayHasKey('13,0', $stateHandler->getBoard());
+        $this->boardHandler->move('-9,0', '13,0');
+
+        $this->assertArrayHasKey('13,0', $this->stateHandler->getBoard());
+    }
+
+    // Issue #5
+    public function testPlay_PlayAfterOneTilePlaceUndo_MoveInState()
+    {
+        // White
+        $this->boardHandler->play('Q', '0,0');
+
+        $this->backendHandler->undo();
+
+        // White
+        $this->boardHandler->play('Q', '0,0');
+
+        $this->assertArrayHasKey('0,0', $this->stateHandler->getBoard());
+    }
+
+    // Issue #5
+    public function testPlay_PlayAfterOneTilePlaceUndo_MoveInDatabase()
+    {
+        // White
+        $this->boardHandler->play('Q', '0,0');
+
+        $this->backendHandler->undo();
+
+        // White
+        $this->boardHandler->play('Q', '0,0');
+
+        $this->assertEquals('0,0', $this->backendHandler->getMoves()[0][4]);
+    }
+
+    // Issue #5
+    public function testPlay_PlayAfterTwoTilePlaceOneUndo_MoveInState()
+    {
+        // White
+        $this->boardHandler->play('Q', '0,0');
+
+        // Black
+        $this->boardHandler->play('Q', '1,0');
+
+        $this->backendHandler->undo();
+
+        // Black
+        $this->boardHandler->play('Q', '1,0');
+
+        $this->assertArrayHasKey('1,0', $this->stateHandler->getBoard());
+    }
+
+    // Issue #5
+    public function testPlay_PlayAfterTwoTilePlaceOneUndo_MoveInDatabase()
+    {
+        // White
+        $this->boardHandler->play('Q', '0,0');
+
+        // Black
+        $this->boardHandler->play('Q', '1,0');
+
+        $this->backendHandler->undo();
+
+        // Black
+        $this->boardHandler->play('Q', '-1,0');
+
+        $this->assertEquals('-1,0', $this->backendHandler->getMoves()[1][4]);
+    }
+
+
+    // Issue #5
+    public function testUndo_UndoImmediately_MoveNotInState()
+    {
+        // White
+        $this->backendHandler->undo();
+
+        $this->assertEmpty($this->stateHandler->getBoard());
+    }
+
+    // Issue #5
+    public function testUndo_UndoImmediately_MoveNotInDatabase()
+    {
+        // White
+        $this->backendHandler->undo();
+
+        $this->assertEmpty($this->stateHandler->getBoard());
+    }
+
+    // Issue #5
+    public function testUndo_UndoTwiceOnePlacedTile_MoveNotInState()
+    {
+        // White
+        $this->boardHandler->play('Q', '0,0');
+
+        $this->backendHandler->undo();
+
+        $this->backendHandler->undo();
+
+        $this->assertEmpty($this->stateHandler->getBoard());
+    }
+
+    // Issue #5
+    public function testUndo_UndoTwiceOnePlacedTile_MoveNotInDatabase()
+    {
+        // White
+        $this->boardHandler->play('Q', '0,0');
+
+        $this->backendHandler->undo();
+
+        $this->backendHandler->undo();
+
+        $this->assertEmpty($this->backendHandler->getMoves());
+    }
+
+    // Issue #5
+    public function testUndo_UndoOnePlacedTile_MoveNotInState()
+    {
+        // White
+        $this->boardHandler->play('Q', '0,0');
+
+        $this->backendHandler->undo();
+
+        $this->assertArrayNotHasKey('0,0', $this->stateHandler->getBoard());
+    }
+
+    // Issue #5
+    public function testUndo_UndoOnePlacedTile_MoveNotInDatabase()
+    {
+        // White
+        $this->boardHandler->play('Q', '0,0');
+
+        $this->backendHandler->undo();
+
+        $this->assertEmpty($this->backendHandler->getMoves());
+    }
+
+    // Issue #5
+    public function testUndo_OneUndoTwoPlacedTiles_MoveInState()
+    {
+        // White
+        $this->boardHandler->play('Q', '0,0');
+
+        // Black
+        $this->boardHandler->play('Q', '1,0');
+
+        $this->backendHandler->undo();
+
+        $this->assertArrayHasKey('0,0', $this->stateHandler->getBoard());
+    }
+
+    // Issue #5
+    public function testUndo_OneUndoTwoPlacedTiles_MoveInDatabase()
+    {
+        // White
+        $this->boardHandler->play('Q', '0,0');
+
+        // Black
+        $this->boardHandler->play('Q', '1,0');
+
+        $this->backendHandler->undo();
+
+        $this->assertEquals('0,0', $this->backendHandler->getMoves()[0][4]);
+    }
+
+    // Issue #5
+    public function testUndo_TwoUndoTwoPlacedTiles_MovesNotInState()
+    {
+        // White
+        $this->boardHandler->play('Q', '0,0');
+
+        // Black
+        $this->boardHandler->play('Q', '1,0');
+
+        $this->backendHandler->undo();
+
+        $this->backendHandler->undo();
+
+        $this->assertArrayNotHasKey('0,0', $this->stateHandler->getBoard());
+    }
+
+    // Issue #5
+    public function testUndo_TwoUndoTwoPlacedTiles_MovesNotInDatabase()
+    {
+        // White
+        $this->boardHandler->play('Q', '0,0');
+
+        // Black
+        $this->boardHandler->play('Q', '1,0');
+
+        $this->backendHandler->undo();
+
+        $this->backendHandler->undo();
+
+        $this->assertEmpty($this->backendHandler->getMoves());
+    }
+
+        // Issue #5
+    public function testUndo_ThreeUndoTwoPlacedTilesOneMovedTile_MovesNotInState()
+    {
+        // White
+        $this->boardHandler->play('Q', '0,0');
+
+        // Black
+        $this->boardHandler->play('Q', '1,0');
+
+        // White
+        $this->boardHandler->move('0,0', '1,-1');
+
+        $this->backendHandler->undo();
+
+        $this->backendHandler->undo();
+
+        $this->backendHandler->undo();
+
+        $this->assertArrayNotHasKey('0,0', $this->stateHandler->getBoard());
+    }
+
+    // Issue #5
+    public function testUndo_ThreeUndoTwoPlacedTilesOneMovedTile_MovesNotInDatabase()
+    {
+        // White
+        $this->boardHandler->play('Q', '0,0');
+
+        // Black
+        $this->boardHandler->play('Q', '1,0');
+
+        // White
+        $this->boardHandler->move('0,0', '1,-1');
+
+        $this->backendHandler->undo();
+
+        $this->backendHandler->undo();
+
+        $this->backendHandler->undo();
+
+        $this->assertNotContains('0,0', $this->backendHandler->getMoves());
     }
 }

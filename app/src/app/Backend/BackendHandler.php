@@ -31,16 +31,43 @@ class BackendHandler
 
     public function undo()
     {
-        // Get last move from database as an array
-        $lastMoveArray = $this->databaseHandler->
-        getLastMove($this->stateHandler->getLastMove())
+        $lastMoveID = $this->stateHandler->getLastMove();
+
+        if ($lastMoveID === null) {
+            $this->databaseHandler->deleteMoves($this->stateHandler->getGameID());
+
+            return;
+        }
+
+        // Get last move ID from database
+        $previousMoveID = $this->databaseHandler
+            ->getMove($lastMoveID)
+            ->fetch_array()[5];
+
+        if ($previousMoveID == null) {
+            $this->databaseHandler->deleteMoves($this->stateHandler->getGameID());
+
+            $this->stateHandler->restart();
+
+            return;
+        }
+
+        // Get previous move from database as an array
+        $previousMoveArray = $this->databaseHandler
+            ->getMove($previousMoveID)
             ->fetch_array();
 
-        // Set last move to last move's last move
-        $this->stateHandler->setLastMove($lastMoveArray[5]);
+        // Remove last move from database
+        $this->databaseHandler->deleteMove($lastMoveID);
 
-        // Set current state to state of last move
-        $this->stateHandler->setStateFromSerialized($lastMoveArray[6]);
+        // Set last move to last move's last move
+        $this->stateHandler->setLastMove($previousMoveID);
+
+        // Set current state to state of previous move
+        $this->stateHandler->setStateFromSerialized($previousMoveArray[6]);
+
+        // Switch player
+        $this->stateHandler->switchPlayer();
     }
 
     public function addMove($from, $to)

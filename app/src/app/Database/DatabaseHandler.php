@@ -18,11 +18,6 @@ class DatabaseHandler
         );
     }
 
-    public function getDatabase(): mysqli
-    {
-        return $this->database;
-    }
-
     public function addMove($types, $gameId, $from, $to, $move, $state)
     {
         $stmt = $this->database->prepare('INSERT INTO moves
@@ -31,6 +26,20 @@ class DatabaseHandler
 
         $stmt->bind_param($types, $gameId, $from, $to, $move, $state);
 
+        $stmt->execute();
+    }
+
+    public function deleteMove($id) {
+        $stmt = $this->database->prepare('DELETE FROM moves WHERE id = ?');
+
+        $stmt->bind_param("s", $id);
+        $stmt->execute();
+    }
+
+    public function deleteMoves($gameID) {
+        $stmt = $this->database->prepare('DELETE FROM moves WHERE game_id = ?');
+
+        $stmt->bind_param("s", $gameID);
         $stmt->execute();
     }
 
@@ -43,7 +52,7 @@ class DatabaseHandler
         return $stmt->get_result();
     }
 
-    public function getLastMove($id) {
+    public function getMove($id) {
         $stmt = $this->database->prepare('SELECT * FROM moves WHERE id = ?');
 
         $stmt->bind_param("s", $id);

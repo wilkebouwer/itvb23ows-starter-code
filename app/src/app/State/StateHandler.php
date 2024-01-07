@@ -47,6 +47,7 @@ class StateHandler
             ];
         $_SESSION['player'] = 0;
         unset($_SESSION['error']);
+        unset($_SESSION['last_move']);
     }
 
     public function switchPlayer() {

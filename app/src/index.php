@@ -67,6 +67,8 @@
     //print("Board");
     //print("<pre>".print_r($board,true)."</pre>");
 
+    //print $stateHandler->getLastMove();
+
     // Used later to print White and Black's hand
     function printHand($hand, $player) {
         foreach ($hand[$player] as $tile => $ct) {
@@ -210,7 +212,7 @@
 
         <strong>
             <?php
-                // Print and reset error
+                // Print error
                 if ($stateHandler->getError() !== null) {
                     echo $stateHandler->getError();
                 }

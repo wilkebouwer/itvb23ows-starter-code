@@ -20,9 +20,9 @@ class ComposerStaticInitd751713988987e9331980363e24189ce
         array (
             'PhpParser\\' => 10,
         ),
-        'M' => 
+        'F' => 
         array (
-            'Mock\\' => 5,
+            'Fake\\' => 5,
         ),
         'D' => 
         array (
@@ -46,9 +46,9 @@ class ComposerStaticInitd751713988987e9331980363e24189ce
         array (
             0 => __DIR__ . '/..' . '/nikic/php-parser/lib/PhpParser',
         ),
-        'Mock\\' => 
+        'Fake\\' => 
         array (
-            0 => __DIR__ . '/../..' . '/tests/Mock',
+            0 => __DIR__ . '/../..' . '/tests/Fake',
         ),
         'Doctrine\\Instantiator\\' => 
         array (

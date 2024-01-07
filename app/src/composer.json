@@ -8,7 +8,7 @@
       "Board\\": "./app/Board",
       "Database\\": "./app/Database",
       "State\\": "./app/State",
-      "Mock\\": "./tests/Mock"
+      "Fake\\": "./tests/Fake"
     }
   }
 }
