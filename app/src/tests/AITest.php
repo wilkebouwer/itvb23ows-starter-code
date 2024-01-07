@@ -1,7 +1,7 @@
 <?php
 
 use Fake\BackendHandlerMock as BackendHandlerMock;
-Use Fake\AIConnectionHandlerMock as AIConnectionHandler;
+use Fake\AIConnectionHandlerMock as AIConnectionHandler;
 use PHPUnit\Framework\TestCase;
 use Board\BoardHandler as BoardHandler;
 use State\StateHandler as StateHandler;
