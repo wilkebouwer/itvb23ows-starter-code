@@ -46,6 +46,7 @@ class DatabaseHandlerMock extends DatabaseHandler
             public function __construct($moveTable, $gameID)
             {
                 $result = [];
+                $move = [];
                 foreach ($moveTable as $move) {
                     if ($move[1] == $gameID) {
                         $result[] = $move;
