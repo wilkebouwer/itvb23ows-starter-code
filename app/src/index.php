@@ -2,13 +2,14 @@
     session_start();
 
     use Backend\BackendHandler as BackendHandler;
+    use \AIConnection\AIConnectionHandler as AIConnectionHandler;
     use Board\BoardHandler as BoardHandler;
 
     require_once './vendor/autoload.php';
 
     $backendHandler = new BackendHandler();
-    ;
-    $boardHandler = new BoardHandler($backendHandler);
+
+    $boardHandler = new BoardHandler($backendHandler, new AIConnectionHandler());
     $stateHandler = $backendHandler->getStateHandler();
 
     $indexLocationHeader = "Location: ./index.php";
@@ -69,12 +70,6 @@
 
     $hand = $stateHandler->getHand();
     $to = $boardHandler->getPossiblePositions();
-
-    // TODO: Debug
-    //print("Board");
-    //print("<pre>".print_r($board,true)."</pre>");
-
-    //print $stateHandler->getLastMove();
 
     // Used later to print White and Black's hand
     function printHand($hand, $player) {
