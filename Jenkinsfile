@@ -23,14 +23,14 @@ pipeline {
 		    i=0; while IFS= read -r line; do
 		    	echo "$line" | grep -q '^.*=:port:' && echo "$line" | sed "s/\\(.*=\\):port:/\\1$(( 50000 + ( 100 * i ) + EXECUTOR_NUMBER ))/" >> ./.env && i=$((i+1)) || echo "$line" >> ./.env
 		    done < ./.env-jenkins
-		    docker-compose build app database
+		    docker-compose build app database ai
 		'''
             }
         }
 
 	stage('docker-compose up') {
             steps {
-	    	sh 'docker-compose up -d app database'
+	    	sh 'docker-compose up -d app database ai'
             }
         }
 
