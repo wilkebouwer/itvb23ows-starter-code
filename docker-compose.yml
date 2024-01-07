@@ -5,12 +5,14 @@ services:
     build: ./app/
     depends_on:
       - database
+      - ai
     command: php -S 0.0.0.0:${APP_PORT}
     environment:
       MYSQL_DATABASE: ${MYSQL_DATABASE}
       MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD}
     networks:
       - databasenet
+      - ainet
     ports:
       - "${APP_PORT}:${APP_PORT}"
   database:
@@ -23,7 +25,14 @@ services:
     networks:
       databasenet:
         aliases:
-          - mysql
+          - mysqlserver
+  ai:
+    build: ./ai/
+    command: flask --app app run --debug
+    networks:
+      ainet:
+        aliases:
+          - aiserver
   jenkins:
     build:
       context: ./jenkins/
@@ -53,4 +62,5 @@ services:
 
 networks:
   databasenet:
+  ainet:
   sonarnet:

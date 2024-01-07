@@ -11,7 +11,7 @@ class DatabaseHandler
     public function __construct()
     {
         $this->database = new mysqli(
-            'mysql',
+            'mysqlserver',
             'root',
             getenv('MYSQL_ROOT_PASSWORD'),
             getenv('MYSQL_DATABASE')
