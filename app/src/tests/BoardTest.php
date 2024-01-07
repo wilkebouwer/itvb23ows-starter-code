@@ -1,19 +1,22 @@
 <?php
 
+
 use Fake\BackendHandlerMock;
 use PHPUnit\Framework\TestCase;
 use Board\BoardHandler as BoardHandler;
+use AIConnection\AIConnectionHandler as AIConnectionHandler;
+use State\StateHandler as StateHandler;
 
 class BoardTest extends TestCase
 {
-    private $backendHandler;
-    private $boardHandler;
-    private $stateHandler;
+    private BackendHandlerMock $backendHandler;
+    private BoardHandler $boardHandler;
+    private StateHandler $stateHandler;
 
     protected function setUp(): void
     {
         $this->backendHandler = new BackendHandlerMock();
-        $this->boardHandler = new BoardHandler($this->backendHandler);
+        $this->boardHandler = new BoardHandler($this->backendHandler, new AIConnectionHandler());
         $this->stateHandler = $this->backendHandler->getStateHandler();
 
         $this->backendHandler->restart();
@@ -550,7 +553,7 @@ class BoardTest extends TestCase
         // White
         $this->boardHandler->play('Q', '0,0');
 
-        $this->assertEquals('0,0', $this->backendHandler->getMoves()[0][4]);
+        $this->assertEquals('0,0', $this->backendHandler->getMoves()->fetch_array()[4]);
     }
 
     // Issue #5
@@ -584,7 +587,11 @@ class BoardTest extends TestCase
         // Black
         $this->boardHandler->play('Q', '-1,0');
 
-        $this->assertEquals('-1,0', $this->backendHandler->getMoves()[1][4]);
+        $moves = $this->backendHandler->getMoves();
+
+        $moves->fetch_array();
+
+        $this->assertEquals('-1,0', $moves->fetch_array()[4]);
     }
 
 
@@ -629,7 +636,7 @@ class BoardTest extends TestCase
 
         $this->backendHandler->undo();
 
-        $this->assertEmpty($this->backendHandler->getMoves());
+        $this->assertEmpty($this->backendHandler->getMoves()->fetch_array());
     }
 
     // Issue #5
@@ -651,7 +658,7 @@ class BoardTest extends TestCase
 
         $this->backendHandler->undo();
 
-        $this->assertEmpty($this->backendHandler->getMoves());
+        $this->assertEmpty($this->backendHandler->getMoves()->fetch_array());
     }
 
     // Issue #5
@@ -679,7 +686,7 @@ class BoardTest extends TestCase
 
         $this->backendHandler->undo();
 
-        $this->assertEquals('0,0', $this->backendHandler->getMoves()[0][4]);
+        $this->assertEquals('0,0', $this->backendHandler->getMoves()->fetch_array()[4]);
     }
 
     // Issue #5
@@ -711,7 +718,7 @@ class BoardTest extends TestCase
 
         $this->backendHandler->undo();
 
-        $this->assertEmpty($this->backendHandler->getMoves());
+        $this->assertEmpty($this->backendHandler->getMoves()->fetch_array());
     }
 
         // Issue #5
@@ -753,6 +760,6 @@ class BoardTest extends TestCase
 
         $this->backendHandler->undo();
 
-        $this->assertNotContains('0,0', $this->backendHandler->getMoves());
+        $this->assertNotContains('0,0', $this->backendHandler->getMoves()->fetch_array());
     }
 }

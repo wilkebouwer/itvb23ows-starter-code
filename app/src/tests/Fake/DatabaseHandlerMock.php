@@ -37,16 +37,38 @@ class DatabaseHandlerMock extends DatabaseHandler
         }
     }
 
-    public function getMoves($gameID): array
+    public function getMoves($gameID): object
     {
-        $result = [];
-        foreach($this->moveTable as $move) {
-            if ($move[1] == $gameID) {
-                $result[] = $move;
-            }
-        }
+        return new class($this->moveTable, $gameID)
+        {
+            private array $moveTable;
+            private string $gameID;
+            private array $result;
 
-        return $result;
+            public function __construct($moveTable, $gameID)
+            {
+                $this->moveTable = $moveTable;
+                $this->gameID = $gameID;
+                $this->result = [];
+
+                foreach ($this->moveTable as $move) {
+                    if ($move[1] == $this->gameID) {
+                        $this->result[] = $move;
+                    }
+                }
+            }
+
+            // Mock mysqli_result internal function
+            public function fetch_array(): array
+            {
+                $nextRow = array_shift($this->result);
+
+                if ($nextRow != null) {
+                    return $nextRow;
+                }
+                return [];
+            }
+        };
     }
 
     public function getMove($id): object

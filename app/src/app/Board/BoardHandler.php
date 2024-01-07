@@ -2,6 +2,7 @@
 
 namespace Board;
 
+use AIConnection\AIConnectionHandler;
 use Backend\BackendHandler;
 use State\StateHandler;
 
@@ -18,11 +19,13 @@ class BoardHandler
             [1, -1]
         ];
     private BackendHandler $backendHandler;
+    private AIConnectionHandler $aiConnectionHandler;
     private StateHandler $stateHandler;
 
-    public function __construct($backendHandler)
+    public function __construct($backendHandler, $aiConnectionHandler)
     {
         $this->backendHandler = $backendHandler;
+        $this->aiConnectionHandler = $aiConnectionHandler;
         $this->stateHandler = $this->backendHandler->getStateHandler();
     }
 
@@ -128,36 +131,74 @@ class BoardHandler
         $this->backendHandler->addMove(null, null);
     }
 
+    public function makeAIMove() {
+        $moveNumber = 0;
+
+        $moves = $this->backendHandler->getMoves();
+
+        while ($moves->fetch_array()) {
+            $moveNumber++;
+        }
+
+        $resultArray = $this->aiConnectionHandler->getAIMoveArray(
+            $moveNumber,
+            $this->stateHandler->getHand(),
+            $this->stateHandler->getBoard()
+        );
+
+        if (!isset($resultArray)) {
+            return;
+        }
+
+        if ($resultArray[0] == "play") {
+            $this->playUnvalidated($resultArray[1], $resultArray[2]);
+        } elseif ($resultArray[0] == "move") {
+            $this->moveUnvalidated($resultArray[1], $resultArray[2]);
+        } elseif ($resultArray[0] == "pass") {
+            $this->pass();
+        }
+    }
+
     public function play($piece, $to)
     {
-        $player = $this->stateHandler->getPlayer();
-
         if ($this->validPlay($piece, $to)) {
-            $this->stateHandler->setError(null);
-
-            $this->stateHandler->setBoardPiece($player, $piece, $to);
-
-            $this->backendHandler->addMove($piece, $to);
+            $this->playUnvalidated($piece, $to);
         }
     }
 
     public function move($from, $to)
     {
+        if ($this->validMove($from, $to)) {
+            $this->moveUnvalidated($from, $to);
+        }
+    }
+
+    public function playUnvalidated($piece, $to)
+    {
+        $player = $this->stateHandler->getPlayer();
+
+        $this->stateHandler->setError(null);
+
+        $this->stateHandler->setBoardPiece($player, $piece, $to);
+
+        $this->backendHandler->addMove($piece, $to);
+    }
+
+    public function moveUnvalidated($from, $to)
+    {
         $board = $this->stateHandler->getBoard();
 
         $this->stateHandler->setError(null);
 
-        if ($this->validMove($from, $to)) {
-            $tile = array_pop($board[$from]);
+        $tile = array_pop($board[$from]);
 
-            $this->stateHandler->setError(null);
+        $this->stateHandler->setError(null);
 
-            unset($board[$from]);
-            $board[$to] = [$tile];
-            $this->stateHandler->setBoard($board);
+        unset($board[$from]);
+        $board[$to] = [$tile];
+        $this->stateHandler->setBoard($board);
 
-            $this->backendHandler->addMove($from, $to);
-        }
+        $this->backendHandler->addMove($from, $to);
     }
 
     private function validPlay($piece, $to): bool

@@ -14,4 +14,5 @@ return array(
     'Database\\' => array($baseDir . '/app/Database'),
     'Board\\' => array($baseDir . '/app/Board'),
     'Backend\\' => array($baseDir . '/app/Backend'),
+    'AIConnection\\' => array($baseDir . '/app/AIConnection'),
 );

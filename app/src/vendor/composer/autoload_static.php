@@ -35,6 +35,10 @@ class ComposerStaticInitd751713988987e9331980363e24189ce
             'Board\\' => 6,
             'Backend\\' => 8,
         ),
+        'A' => 
+        array (
+            'AIConnection\\' => 13,
+        ),
     );
 
     public static $prefixDirsPsr4 = array (
@@ -69,6 +73,10 @@ class ComposerStaticInitd751713988987e9331980363e24189ce
         'Backend\\' => 
         array (
             0 => __DIR__ . '/../..' . '/app/Backend',
+        ),
+        'AIConnection\\' => 
+        array (
+            0 => __DIR__ . '/../..' . '/app/AIConnection',
         ),
     );
 

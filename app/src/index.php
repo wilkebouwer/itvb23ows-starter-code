@@ -7,7 +7,7 @@
     require_once './vendor/autoload.php';
 
     $backendHandler = new BackendHandler();
-
+    ;
     $boardHandler = new BoardHandler($backendHandler);
     $stateHandler = $backendHandler->getStateHandler();
 
@@ -51,11 +51,18 @@
     }
 
     // Handle 'Move' button press
-    if(array_key_exists('move', $_POST)) {
+    if(array_key_exists('move', $_POST) && isset($_POST['from'])) {
         $from = $_POST['from'];
         $to = $_POST['to'];
 
         $boardHandler->move($from, $to);
+
+        header($indexLocationHeader);
+    }
+
+    // Handle 'AI' button press
+    if (array_key_exists('ai', $_POST)) {
+        $boardHandler->makeAIMove();
 
         header($indexLocationHeader);
     }
@@ -202,6 +209,9 @@
                 </select>
             </label>
             <input type="submit" name="move" value="Move">
+        </form>
+        <form method="post">
+            <input type="submit" name="ai" value="AI">
         </form>
         <form method="post">
             <input type="submit" name="pass" value="Pass">

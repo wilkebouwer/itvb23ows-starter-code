@@ -8,6 +8,7 @@
       "Board\\": "./app/Board",
       "Database\\": "./app/Database",
       "State\\": "./app/State",
+      "AIConnection\\": "./app/AIConnection",
       "Fake\\": "./tests/Fake"
     }
   }

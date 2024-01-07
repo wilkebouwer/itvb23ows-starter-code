@@ -28,7 +28,7 @@ services:
           - mysqlserver
   ai:
     build: ./ai/
-    command: flask --app app run --debug
+    command: flask --app app run -h 0.0.0.0 --debug
     networks:
       ainet:
         aliases:
